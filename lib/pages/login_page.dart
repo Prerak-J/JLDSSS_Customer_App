@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/signup_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
@@ -35,6 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
       showSnackBar(res, context);
     } else if (context.mounted) {
       showSnackBar('Welcome back!', context);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
     }
   }
 
@@ -123,7 +129,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : const Text(
                             'Log in',
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),

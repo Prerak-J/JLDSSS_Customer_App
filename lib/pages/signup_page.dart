@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
@@ -40,6 +41,11 @@ class _SignupScreenState extends State<SignupScreen> {
       showSnackBar(res, context);
     } else if (context.mounted) {
       showSnackBar('Welcome $name!', context);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
     }
   }
 

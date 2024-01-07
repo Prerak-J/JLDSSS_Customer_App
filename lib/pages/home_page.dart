@@ -1,4 +1,5 @@
 import 'package:customer_app/utils/colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +10,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _page = 0;
+  late PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+    // print('I HAVE COME');
+  }
+
+  void navigationTapped(int page) {
+    pageController.jumpToPage(page);
+    // print('I HAVE COME AGAIN');
+  }
+
+  void onPageChanged(int page) {
+    setState(() {
+      _page = page;
+    });
+    // print('Page $_page');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    pageController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,13 +75,55 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: const Center(
-        child: Text(
-          'HOMMMEEEE SCREEEENNN',
-          style: TextStyle(
-            color: Colors.black,
+      body: PageView(
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          Center(
+            child: Text(
+              'HOMMMEEEE SCREEEENNN',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
           ),
-        ),
+          Center(
+            child: Text(
+              'HISTORRYYY SCREEEENNN',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              'PROFILEEEE SCREEEENNN',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        onTap: navigationTapped,
+        backgroundColor: Colors.white,
+        currentIndex: _page,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delivery_dining),
+            label: 'Delivery',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }

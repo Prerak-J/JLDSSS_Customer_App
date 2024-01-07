@@ -15,7 +15,7 @@ class _FlashScreenState extends State<FlashScreen> {
   @override
   void initState() {
     super.initState();
-    print('I HAVE BEEN SUMMONED');
+    // print('I HAVE BEEN SUMMONED');
     _navigateToHome();
   }
 
