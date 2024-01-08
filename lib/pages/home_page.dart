@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/profile_page.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 7,
+        shadowColor: appBarGreen,
         backgroundColor: appBarGreen,
         automaticallyImplyLeading: false,
         title: const Row(
@@ -96,14 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Center(
-            child: Text(
-              'PROFILEEEE SCREEEENNN',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: CupertinoTabBar(
