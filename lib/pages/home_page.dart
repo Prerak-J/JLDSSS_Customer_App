@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/delivery_page.dart';
 import 'package:customer_app/pages/profile_page.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,14 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPageChanged: onPageChanged,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
-          Center(
-            child: Text(
-              'HOMMMEEEE SCREEEENNN',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ),
+          DeliveryScreen(),
           Center(
             child: Text(
               'HISTORRYYY SCREEEENNN',
