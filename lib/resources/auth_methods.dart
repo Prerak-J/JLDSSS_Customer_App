@@ -53,10 +53,10 @@ class AuthMethods {
   
       if (snapshot.exists) {
         // Get username and email directly from the DocumentSnapshot
-        String? username = snapshot.get('username');
+        String? name = snapshot.get('name');
         String? email = snapshot.get('email');
         Map<String, dynamic> userData = {
-          'username': username,
+          'name': name,
           'email': email,
         };
         return userData;

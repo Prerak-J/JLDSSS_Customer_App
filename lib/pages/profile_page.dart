@@ -2,6 +2,7 @@ import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,8 +13,45 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // bool _isLoading = false;
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  var _userData = {};
+  String name = '';
+  String email = '';
+  showAlertDialog() {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: const Text(
+        "Cancel",
+        style: TextStyle(color: parrotGreen),
+      ),
+    );
+    Widget continueButton = TextButton(
+      onPressed: logoutUser,
+      child: const Text(
+        "Logout",
+        style: TextStyle(color: parrotGreen),
+      ),
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text(
+        "Logout",
+        style: TextStyle(color: parrotGreen),
+      ),
+      content: const Text("Are you sure you want to logout?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   void logoutUser() async {
     String res = await AuthMethods().logoutUser();
@@ -30,6 +68,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showSnackBar(res, context);
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetch();
+    // print('init state calledededededed');
+  }
+
+  void fetch() async {
+    _userData = (await AuthMethods().getUserData(
+      FirebaseAuth.instance.currentUser!.uid,
+    ))!;
+    setState(() {
+      name = _userData['name'];
+      email = _userData['email'];
+    });
   }
 
   @override
@@ -57,20 +112,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
               color: Color.fromARGB(255, 220, 220, 220),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Prerak',
-                  style: TextStyle(
+                  name,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  'prerak@gmail.com',
-                  style: TextStyle(
+                  email,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Color.fromARGB(255, 31, 129, 34),
                   ),
@@ -123,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'Logout',
                   ),
                   trailing: const Icon(Icons.keyboard_arrow_right),
-                  onTap: logoutUser,
+                  onTap: showAlertDialog,
                 ),
               ],
             ),
