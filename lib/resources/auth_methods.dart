@@ -37,6 +37,37 @@ class AuthMethods {
     return res;
   }
 
+  //GET USER NAME AND EMAIL BY USING UID
+  //FOR FIRST LOGIN
+  //GETTING USER DATA FROM DATABASE USING THEIR UID . WE CAN GET THEIR UID AS A RESPONSE OF THEIR SUCCESSFULL LOGIN
+  //FOR AUTO LOGIN
+  //IF WE WILL APPLY AUTO LOGIN METHOD THEN GENERATE TOKEN USING THEIR UID DURING FIRST LOGIN AND STORE TOKEN 
+  //IN THEIR LOCAL STORAGE SO THAT NO NEED FOR LOGIN AGAIN AND AGAIN AUTHENTICATE USER BY THAT TOKEN ALSO GET 
+  //UID FROM TOKEN IF TOKEN EXPERIED THEN NEED TO LOGIN AGAIN AND REGENRATE TOKENS
+  Future<DocumentSnapshot?> getUserData(String uid) async {
+    try {
+      DocumentSnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get();
+  
+      if (snapshot.exists) {
+        // Get username and email directly from the DocumentSnapshot
+        String? username = snapshot.get('username');
+        String? email = snapshot.get('email');
+        Map<String, dynamic> userData = {
+          'username': username,
+          'email': email,
+        };
+        return DocumentSnapshot<Map<String, dynamic>>.fromMap(userData);
+      } else {
+        return null; // Document does not exist
+      }
+    } catch (error) {
+      print('Getting error during fetching data: $error');
+      return null; 
+    }
+  }
   //LOGIN USER
   Future<String> loginUser({
     required String email,
