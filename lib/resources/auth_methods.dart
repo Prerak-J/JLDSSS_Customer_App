@@ -44,9 +44,9 @@ class AuthMethods {
   //IF WE WILL APPLY AUTO LOGIN METHOD THEN GENERATE TOKEN USING THEIR UID DURING FIRST LOGIN AND STORE TOKEN 
   //IN THEIR LOCAL STORAGE SO THAT NO NEED FOR LOGIN AGAIN AND AGAIN AUTHENTICATE USER BY THAT TOKEN ALSO GET 
   //UID FROM TOKEN IF TOKEN EXPERIED THEN NEED TO LOGIN AGAIN AND REGENRATE TOKENS
-  Future<DocumentSnapshot?> getUserData(String uid) async {
+ Future<Map<String, dynamic>?> getUserData(String uid) async {
     try {
-      DocumentSnapshot snapshot = await _firestore
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('users')
           .doc(uid)
           .get();
@@ -59,13 +59,13 @@ class AuthMethods {
           'username': username,
           'email': email,
         };
-        return DocumentSnapshot<Map<String, dynamic>>.fromMap(userData);
+        return userData;
       } else {
         return null; // Document does not exist
       }
     } catch (error) {
       print('Getting error during fetching data: $error');
-      return null; 
+      return null;
     }
   }
   //LOGIN USER
