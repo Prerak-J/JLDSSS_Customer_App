@@ -57,6 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void logoutUser() async {
+    Navigator.pop(context);
     String res = await AuthMethods().logoutUser();
 
     if (context.mounted) {

@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         elevation: 7,
         shadowColor: appBarGreen,
-        backgroundColor: appBarGreen,
+        backgroundColor: appBarGreen.withOpacity(0.96),
         automaticallyImplyLeading: false,
         title: const Row(
           children: [

@@ -41,16 +41,14 @@ class AuthMethods {
   //FOR FIRST LOGIN
   //GETTING USER DATA FROM DATABASE USING THEIR UID . WE CAN GET THEIR UID AS A RESPONSE OF THEIR SUCCESSFULL LOGIN
   //FOR AUTO LOGIN
-  //IF WE WILL APPLY AUTO LOGIN METHOD THEN GENERATE TOKEN USING THEIR UID DURING FIRST LOGIN AND STORE TOKEN 
-  //IN THEIR LOCAL STORAGE SO THAT NO NEED FOR LOGIN AGAIN AND AGAIN AUTHENTICATE USER BY THAT TOKEN ALSO GET 
+  //IF WE WILL APPLY AUTO LOGIN METHOD THEN GENERATE TOKEN USING THEIR UID DURING FIRST LOGIN AND STORE TOKEN
+  //IN THEIR LOCAL STORAGE SO THAT NO NEED FOR LOGIN AGAIN AND AGAIN AUTHENTICATE USER BY THAT TOKEN ALSO GET
   //UID FROM TOKEN IF TOKEN EXPERIED THEN NEED TO LOGIN AGAIN AND REGENRATE TOKENS
- Future<Map<String, dynamic>?> getUserData(String uid) async {
+  Future<Map<String, dynamic>?> getUserData(String uid) async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore
-          .collection('users')
-          .doc(uid)
-          .get();
-  
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('users').doc(uid).get();
+
       if (snapshot.exists) {
         // Get username and email directly from the DocumentSnapshot
         String? name = snapshot.get('name');
@@ -68,6 +66,7 @@ class AuthMethods {
       return null;
     }
   }
+
   //LOGIN USER
   Future<String> loginUser({
     required String email,
@@ -93,6 +92,23 @@ class AuthMethods {
     try {
       await _auth.signOut();
       res = "success";
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
+  //DELETE USER
+  Future<String> deleteUser(
+      // required String email,
+      // required String password,
+      ) async {
+    String res = 'Some error occured';
+    try {
+      User? curr = _auth.currentUser!;
+      await curr.delete();
+      await _firestore.collection('users').doc(curr.uid).delete();
+      res = 'success';
     } catch (e) {
       res = e.toString();
     }

@@ -1,3 +1,5 @@
+import 'package:customer_app/resources/auth_methods.dart';
+import 'package:customer_app/screens/otp_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +11,83 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  // bool _isLoading = false;
+  showAlertDialog() {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: const Text(
+        "Cancel",
+        style: TextStyle(color: parrotGreen),
+      ),
+    );
+    Widget continueButton = TextButton(
+      onPressed: () => Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => OtpScreen(
+            buttonColor: Colors.red,
+            purpose: 'Delete Profile',
+            otpFuntion: AuthMethods().deleteUser,
+          ),
+        ),
+      ),
+      child: const Text(
+        "Delete",
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text(
+        "Delete Profile",
+        style: TextStyle(color: parrotGreen),
+      ),
+      content: const Text(
+        "You will lose all your data stored in this profile like order history, favourites, preferences etc.",
+        maxLines: 4,
+        textAlign: TextAlign.justify,
+      ),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // void deleteProfile() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //   String res = await AuthMethods().deleteUser();
+  //   setState(() {
+  //     _isLoading = false;
+  //   });
+  //   if (context.mounted) {
+  //     if (res == 'success') {
+  //       showSnackBar('Profile deleted', context);
+  //       Navigator.of(context).push(
+  //         MaterialPageRoute(
+  //           builder: (context) => const LoginScreen(),
+  //         ),
+  //       );
+  //     } else {
+  //       showSnackBar(res, context);
+  //       Navigator.of(context).push(
+  //         MaterialPageRoute(
+  //           builder: (context) => const SettingsScreen(),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,18 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: lightGreen,
         title: const Row(
           children: [
-            // Icon(
-            //   Icons.settings,
-            //   color: appBarGreen,
-            //   size: 25,
-            // ),
-            // SizedBox(
-            //   width: 8,
-            // ),
             Text(
               "Settings",
               style: TextStyle(
-                // fontWeight: FontWeight.bold,
                 color: Colors.black,
                 fontSize: 23,
               ),
@@ -101,7 +171,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       // trailing: const Icon(Icons.keyboard_arrow_right),
-                      onTap: () {},
+                      onTap: showAlertDialog,
                     ),
                   ],
                 ),

@@ -1,5 +1,4 @@
 import 'package:customer_app/utils/colors.dart';
-import 'package:customer_app/widgets/text_field_input.dart';
 import 'package:flutter/material.dart';
 
 class DeliveryScreen extends StatefulWidget {
@@ -19,23 +18,59 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Column(
-        children: [
-          TextFieldInput(
-            icon: const Icon(
-              Icons.search,
-              color: appBarGreen,
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          pinned: true,
+          // bottom: const PreferredSize(
+          //   preferredSize: Size.fromHeight(-10),
+          //   child: SizedBox(),
+          // ),
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 5),
+            child: SearchBar(
+              padding: const MaterialStatePropertyAll(
+                EdgeInsets.symmetric(
+                  horizontal: 16,
+                ),
+              ),
+              leading: const Icon(Icons.search),
+              hintText: 'Restaurants or dishes',
+              hintStyle: const MaterialStatePropertyAll(
+                TextStyle(fontStyle: FontStyle.italic, wordSpacing: 0.5),
+              ),
+              constraints: const BoxConstraints(minHeight: 100),
+              controller: _searchController,
+              shadowColor: const MaterialStatePropertyAll(lightGrey),
+              side: MaterialStatePropertyAll(
+                BorderSide(
+                  color: parrotGreen.withOpacity(0.3),
+                ),
+              ),
             ),
-            textEditingController: _searchController,
-            hintText: 'Search for a restaurant or a dish',
-            textInputType: TextInputType.text,
           ),
-          const SizedBox(height: 250,),
-          const Center(child: Text('HOOOOMMEEE SCREEEENNN'),),
-        ],
-      ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: lightGreen,
+                  ),
+                  height: 200,
+                  width: MediaQuery.of(context).size.width,
+                ),
+              );
+            },
+            childCount: 20,
+          ),
+        )
+      ],
     );
   }
 }

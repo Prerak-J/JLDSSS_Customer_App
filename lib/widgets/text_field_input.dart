@@ -6,6 +6,7 @@ class TextFieldInput extends StatelessWidget {
   final String hintText;
   final TextInputType textInputType;
   final Icon icon;
+  final int? maxLength;
   const TextFieldInput({
     super.key,
     required this.textEditingController,
@@ -13,6 +14,7 @@ class TextFieldInput extends StatelessWidget {
     this.isPass = false,
     required this.textInputType,
     this.icon = const Icon(Icons.text_snippet_outlined),
+    this.maxLength,
   });
 
   @override
@@ -22,6 +24,7 @@ class TextFieldInput extends StatelessWidget {
       color: Colors.white10,
       child: TextField(
         controller: textEditingController,
+        maxLength: maxLength,
         decoration: InputDecoration(
           prefixIcon: icon,
           // iconColor: Colors.grey,
