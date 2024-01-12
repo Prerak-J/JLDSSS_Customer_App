@@ -128,6 +128,7 @@ class AuthMethods {
       },
       codeSent: (String verificationId, int? resendToken) {
         // Handle the code sent event
+        //verification id that we are getting here store in a variable and use when verifyOtp() function called
         print("Code Sent: $verificationId");
         //now show here otp screen to user
       },
