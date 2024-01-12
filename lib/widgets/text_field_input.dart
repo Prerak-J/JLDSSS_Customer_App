@@ -7,6 +7,7 @@ class TextFieldInput extends StatelessWidget {
   final TextInputType textInputType;
   final Icon icon;
   final int? maxLength;
+  final String? prefixText;
   const TextFieldInput({
     super.key,
     required this.textEditingController,
@@ -15,6 +16,7 @@ class TextFieldInput extends StatelessWidget {
     required this.textInputType,
     this.icon = const Icon(Icons.text_snippet_outlined),
     this.maxLength,
+    this.prefixText,
   });
 
   @override
@@ -26,9 +28,11 @@ class TextFieldInput extends StatelessWidget {
         controller: textEditingController,
         maxLength: maxLength,
         decoration: InputDecoration(
+          labelText: hintText,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          prefixText: prefixText,
           prefixIcon: icon,
           // iconColor: Colors.grey,
-          hintText: hintText,
           border: inputBorder,
           focusedBorder: inputBorder,
           enabledBorder: inputBorder,

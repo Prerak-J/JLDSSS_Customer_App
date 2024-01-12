@@ -102,10 +102,10 @@ class AuthMethods {
   // phoneNumber format should be in this form = '+916667778885'
   Future<void> sendOtp(String phoneNumber) async {
     try {
-      await FirebasePhoneAuth.instance.verifyPhoneNumber(
+      await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
-        autoRetrievalTimeout: (String autoVerificationId) {
+        codeAutoRetrievalTimeout: (String autoVerificationId) {
           // Handle the automatic code retrieval timeout
           //this method will be autometically called when time limit exeed 1 minute
           //in ui write a code here to resend otp

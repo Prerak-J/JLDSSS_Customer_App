@@ -122,6 +122,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   textEditingController: _phoneController,
                   hintText: 'Enter your phone number',
                   textInputType: TextInputType.number,
+                  prefixText: '+91',
                 ),
                 const SizedBox(
                   height: 12,
