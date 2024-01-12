@@ -98,6 +98,7 @@ class AuthMethods {
     return res;
   }
   // HERE THE CONCEPT OF PHONE OTP VERIFICATION
+   // phoneNumber format should be in this form = '+916667778885'
   Future<void> _sendOtp(String phoneNumber) async {
   try {
     await _auth.verifyPhoneNumber(
