@@ -159,6 +159,23 @@ Future<void> _verifyOtp(String otp, String verificationId) async {
 }
   //SECOND STEP VERIFY OTP WITH OTP AND VERIFICATION ID 
  // on send otp again button clicked(if otp experied)
+
+//FUNCTION TO UPDATE DATA
+//send data in form of key value line {
+//   'email':abc@getMaxListeners.com,
+//   'phone':'phonenumber'
+// } to this function
+Future<void> updateUserData(String uid, Map<String, dynamic> dataToUpdate) async {
+  try {
+    await _firestore.collection('users').doc(uid).update(dataToUpdate);
+    print('data updated');
+  } catch (e) {
+    print('Error updating user data: $e');
+  }
+}
+
+
+    
 Future<void> _resendOtp(verificationId) async {
  //this is new verification id
   if (verificationId.isNotEmpty) {
