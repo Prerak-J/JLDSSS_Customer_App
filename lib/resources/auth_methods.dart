@@ -156,7 +156,6 @@ Future<void> verifyOtp(String otp, String verificationId) async {
   }
 }
   //SECOND STEP VERIFY OTP WITH OTP AND VERIFICATION ID 
- // on send otp again button clicked(if otp experied)
 
 //FUNCTION TO UPDATE DATA
 //send data in form of key value line {
