@@ -97,12 +97,86 @@ class AuthMethods {
     }
     return res;
   }
-  // HERE THE CONCEPT OF PHONE OTP VERIFICATION 
-  
+  // HERE THE CONCEPT OF PHONE OTP VERIFICATION
+  Future<void> _sendOtp(String phoneNumber) async {
+  try {
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: const Duration(seconds: 60),
+      autoRetrievalTimeout: (String autoVerificationId) {
+        // Handle the automatic code retrieval timeout
+        //this method will be autometically called when time limit exeed 1 minute 
+        //in ui write a code here to resend otp
+        //and give a dynamic button here send otp named and on press _resendOtp this function will be call
+        //make sure verification id updated everywhere
+        //make sure u update your verificationId because in _resendOtp() function latest verificationId will be used
+        verificationId = autoVerificationId;
+        print("Auto Retrieval Timeout");
+      },
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // Handle the verification completed event
+        //in android this will be called autometically no need to enter otp to user
+        //this worked in android only. if u want user android user enter otp , then remove this function
+        print("Verification Completed");
+        await _auth.signInWithCredential(credential);
+        //navigate user to main screen
+        print("User signed in");
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        // Handle the verification failed event
+        //wrong phone no or SMS quota has been exceeded.
+        print("Verification Failed: ${e.message}");
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        // Handle the code sent event
+        print("Code Sent: $verificationId");
+        //now show here otp screen to user 
+        //here we get variable verificationId
+      },
+    );
+  } catch (e) {
+    print("Error: $e");
+  }
   //FIRST STEP SEND OTP AND GET VERIFICATION ID
-  
+    
+  //otp screen function
+ // by upper function we will get an verification id and now navigate to otp screen with 
+  //give varification id to otp screen
+  //now navigate to the otp screen with otp verificationId 
+Future<void> _verifyOtp(String otp, String verificationId) async {
+  try {
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: otp,
+    );
+    await _auth.signInWithCredential(credential);
+    //here navigate user to the main home screen on success
+    print("User signed in");
+  } catch (e) {
+   //show in ui wrong otp 
+    print("Error: $e");
+  }
+}
   //SECOND STEP VERIFY OTP WITH OTP AND VERIFICATION ID 
-  
+ // on send otp again button clicked(if otp experied)
+Future<void> _resendOtp(verificationId) async {
+ //this is new verification id
+  if (verificationId.isNotEmpty) {
+    try {
+      await _auth.resendOtp(
+        verificationId: verificationId,  //this is the verification is which we used in otp screen
+        timeout: const Duration(seconds: 60),
+        codeSent: (String sentVerificationId, int? resendToken) {
+          // Handle the code resent event
+          print("Code Resent: $sentVerificationId");
+          //update verification id
+          verificationId = sentVerificationId;
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
   //THIRD STEP IF VERIFIED THEN NAVIGATE USER TO MAIN SCREEN IF PHONE NUMBER ALREADY EXIST 
   //IF NOT EXIST THEN TAKE INPUT THEIR USERNAME ALSO
 
