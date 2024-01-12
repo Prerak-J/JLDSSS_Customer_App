@@ -39,7 +39,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               leading: const Icon(Icons.search),
               hintText: 'Restaurants or dishes',
               hintStyle: const MaterialStatePropertyAll(
-                TextStyle(fontStyle: FontStyle.italic, wordSpacing: 0.5),
+                TextStyle(fontStyle: FontStyle.italic, wordSpacing: 0.6, letterSpacing: 0.3),
               ),
               constraints: const BoxConstraints(minHeight: 100),
               controller: _searchController,

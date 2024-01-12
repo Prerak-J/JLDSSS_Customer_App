@@ -97,83 +97,82 @@ class AuthMethods {
     }
     return res;
   }
+
   // HERE THE CONCEPT OF PHONE OTP VERIFICATION
-   // phoneNumber format should be in this form = '+916667778885'
+  // phoneNumber format should be in this form = '+916667778885'
   Future<void> sendOtp(String phoneNumber) async {
-  try {
-    await FirebasePhoneAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      timeout: const Duration(seconds: 60),
-      autoRetrievalTimeout: (String autoVerificationId) {
-        // Handle the automatic code retrieval timeout
-        //this method will be autometically called when time limit exeed 1 minute 
-        //in ui write a code here to resend otp
-        //and give a dynamic button here resend otp named and on press resendOtp call this same function again()
-        print("Auto Retrieval Timeout");
-        
-      },
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Handle the verification completed event
-        //in android this will be called autometically no need to enter otp to user
-        //this worked in android only. if u want user android user enter otp , then remove this function
-        print("Verification Completed");
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        //navigate user to main screen
-        print("User signed in");
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Handle the verification failed event
-        //wrong phone no or SMS quota has been exceeded.
-        print("Verification Failed: ${e.message}");
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        // Handle the code sent event
-        //verification id that we are getting here store in a variable and use when verifyOtp() function called
-        print("Code Sent: $verificationId");
-        //now show here otp screen to user
-      },
-    );
-  } catch (e) {
-    print("Error: $e");
+    try {
+      await FirebasePhoneAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        timeout: const Duration(seconds: 60),
+        autoRetrievalTimeout: (String autoVerificationId) {
+          // Handle the automatic code retrieval timeout
+          //this method will be autometically called when time limit exeed 1 minute
+          //in ui write a code here to resend otp
+          //and give a dynamic button here resend otp named and on press resendOtp call this same function again()
+          print("Auto Retrieval Timeout");
+        },
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Handle the verification completed event
+          //in android this will be called autometically no need to enter otp to user
+          //this worked in android only. if u want user android user enter otp , then remove this function
+          print("Verification Completed");
+          await FirebaseAuth.instance.signInWithCredential(credential);
+          //navigate user to main screen
+          print("User signed in");
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          // Handle the verification failed event
+          //wrong phone no or SMS quota has been exceeded.
+          print("Verification Failed: ${e.message}");
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          // Handle the code sent event
+          //verification id that we are getting here store in a variable and use when verifyOtp() function called
+          print("Code Sent: $verificationId");
+          //now show here otp screen to user
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
   }
   //FIRST STEP SEND OTP AND GET VERIFICATION ID
-    
+
   //otp screen function
- // by upper function we will get an verification id and now navigate to otp screen with 
+  // by upper function we will get an verification id and now navigate to otp screen with
   //give varification id to otp screen
-  //now navigate to the otp screen with otp verificationId 
-Future<void> verifyOtp(String otp, String verificationId) async {
-  try {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: otp,
-    );
-    await _auth.signInWithCredential(credential);
-    //here navigate user to the main home screen on success
-    print("User signed in");
-  } catch (e) {
-   //show in ui wrong otp 
-    print("Error: $e");
+  //now navigate to the otp screen with otp verificationId
+  Future<void> verifyOtp(String otp, String verificationId) async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: otp,
+      );
+      await _auth.signInWithCredential(credential);
+      //here navigate user to the main home screen on success
+      print("User signed in");
+    } catch (e) {
+      //show in ui wrong otp
+      print("Error: $e");
+    }
   }
-}
-  //SECOND STEP VERIFY OTP WITH OTP AND VERIFICATION ID 
+  //SECOND STEP VERIFY OTP WITH OTP AND VERIFICATION ID
 
 //FUNCTION TO UPDATE DATA
 //send data in form of key value line {
 //   'email':abc@getMaxListeners.com,
 //   'phone':'phonenumber'
 // } to this function
-Future<void> updateUserData(String uid, Map<String, dynamic> dataToUpdate) async {
-  try {
-    await _firestore.collection('users').doc(uid).update(dataToUpdate);
-    print('data updated');
-  } catch (e) {
-    print('Error updating user data: $e');
+  Future<void> updateUserData(String uid, Map<String, dynamic> dataToUpdate) async {
+    try {
+      await _firestore.collection('users').doc(uid).update(dataToUpdate);
+      print('data updated');
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
   }
-}
 
-
-  
   //DELETE USER
   Future<String> deleteUser(
       // required String email,
