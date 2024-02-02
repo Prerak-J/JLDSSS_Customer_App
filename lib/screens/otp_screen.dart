@@ -1,19 +1,25 @@
 import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/pages/settings_page.dart';
+import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:customer_app/widgets/text_field_input.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class OtpScreen extends StatefulWidget {
+  final String verifyId;
   final String purpose;
   final Color buttonColor;
-  final Future<String> Function() otpFuntion;
+  final String name;
+  final String email;
   const OtpScreen({
     super.key,
     this.purpose = 'Continue',
     this.buttonColor = Colors.tealAccent,
-    required this.otpFuntion,
+    this.name = '',
+    this.email = '',
+    required this.verifyId,
   });
 
   @override
@@ -23,24 +29,59 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
   bool _isLoading = false;
+  void verifyOtp() {
+    if (true) {
+      otpFunction();
+    }
+  }
+
   void otpFunction() async {
-    setState(() {
-      _isLoading = true;
-    });
-    String res = await widget.otpFuntion();
-    setState(() {
-      _isLoading = false;
-    });
-    if (context.mounted) {
-      if (res == 'success') {
-        showSnackBar('Profile deleted', context);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
-        );
-      } else {
+    //DELETE PROFILE CONDITION
+    if (widget.purpose == 'Delete Profile') {
+      setState(() {
+        _isLoading = true;
+      });
+      String res = await AuthMethods().deleteUser();
+      setState(() {
+        _isLoading = false;
+      });
+      if (context.mounted) {
+        if (res == 'success') {
+          showSnackBar('Profile deleted', context);
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ),
+          );
+        } else {
+          showSnackBar(res, context);
+          Navigator.of(context).pop();
+        }
+      }
+    }
+
+    //EDIT PROFILE CONDITION
+    else if (widget.purpose == 'Edit Profile') {
+      setState(() {
+        _isLoading = true;
+      });
+      String res = await AuthMethods().updateUserData(
+        FirebaseAuth.instance.currentUser!.uid,
+        {
+          'name': widget.name,
+          'email': widget.email,
+        },
+      );
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (res != "success" && context.mounted) {
         showSnackBar(res, context);
+      } else if (context.mounted) {
+        showSnackBar('Profile updated', context);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const SettingsScreen(),
@@ -146,7 +187,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     child: Container(),
                   ),
                   InkWell(
-                    onTap: otpFunction,
+                    onTap: verifyOtp,
                     child: Container(
                       width: 150,
                       alignment: Alignment.center,
@@ -168,7 +209,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           : Text(
                               widget.purpose,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -177,7 +218,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ],
               ),
               const SizedBox(
-                height: 18,
+                height: 25,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -200,6 +241,19 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                child: GestureDetector(
+                  onTap: () {},
+                  child: const Text(
+                    'Verify via password',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.tealAccent),
+                  ),
+                ),
               ),
               Flexible(
                 flex: 2,

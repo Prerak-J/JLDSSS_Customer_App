@@ -17,6 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var _userData = {};
   String name = '';
   String email = '';
+  String phone = '';
   bool _isLoading = false;
 
   showAlertDialog() {
@@ -32,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onPressed: logoutUser,
       child: const Text(
         "Logout",
-        style: TextStyle(color: parrotGreen),
+        style: TextStyle(color: Colors.redAccent),
       ),
     );
     // set up the AlertDialog
@@ -92,6 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoading = false;
       name = _userData['name'];
       email = _userData['email'];
+      phone = _userData['phone'];
     });
   }
 
@@ -142,6 +144,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           color: Color.fromARGB(255, 31, 129, 34),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        phone,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          color: Colors.black54,
                         ),
                       ),
                     ],

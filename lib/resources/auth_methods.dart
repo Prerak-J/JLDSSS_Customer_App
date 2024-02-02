@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -23,7 +22,7 @@ class AuthMethods {
         await _firestore.collection('users').doc(cred.user!.uid).set({
           'name': name,
           'email': email,
-          'phone': phone,
+          'phone': '+91$phone',
           'password': password,
         });
 
@@ -53,9 +52,13 @@ class AuthMethods {
         // Get username and email directly from the DocumentSnapshot
         String? name = snapshot.get('name');
         String? email = snapshot.get('email');
+        String? phone = snapshot.get('phone');
+        String? password = snapshot.get('password');
         Map<String, dynamic> userData = {
           'name': name,
           'email': email,
+          'phone': phone,
+          'password': password,
         };
         return userData;
       } else {
@@ -100,7 +103,8 @@ class AuthMethods {
 
   // HERE THE CONCEPT OF PHONE OTP VERIFICATION
   // phoneNumber format should be in this form = '+916667778885'
-  Future<void> sendOtp(String phoneNumber) async {
+  Future<String> sendOtp(String phoneNumber) async {
+    String verifyId = '';
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -131,11 +135,13 @@ class AuthMethods {
           //verification id that we are getting here store in a variable and use when verifyOtp() function called
           print("Code Sent: $verificationId");
           //now show here otp screen to user
+          verifyId = verificationId;
         },
       );
     } catch (e) {
       print("Error: $e");
     }
+    return verifyId;
   }
   //FIRST STEP SEND OTP AND GET VERIFICATION ID
 
@@ -164,13 +170,15 @@ class AuthMethods {
 //   'email':abc@getMaxListeners.com,
 //   'phone':'phonenumber'
 // } to this function
-  Future<void> updateUserData(String uid, Map<String, dynamic> dataToUpdate) async {
+  Future<String> updateUserData(String uid, Map<String, dynamic> dataToUpdate) async {
+    String res = 'Some error occured';
     try {
       await _firestore.collection('users').doc(uid).update(dataToUpdate);
-      print('data updated');
+      res = 'success';
     } catch (e) {
-      print('Error updating user data: $e');
+      res = e.toString();
     }
+    return res;
   }
 
   //DELETE USER

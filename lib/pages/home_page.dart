@@ -44,39 +44,49 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 7,
-        shadowColor: appBarGreen,
-        backgroundColor: appBarGreen.withOpacity(0.96),
-        automaticallyImplyLeading: false,
-        title: const Row(
-          children: [
-            Icon(
-              Icons.location_on_rounded,
-              color: Colors.red,
-              size: 30,
-            ),
-            SizedBox(
-              width: 2,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40),
+        child: AppBar(
+          elevation: 7,
+          shadowColor: appBarGreen,
+          backgroundColor: appBarGreen.withOpacity(0.96),
+          automaticallyImplyLeading: false,
+          title: const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Row(
               children: [
-                Text(
-                  "Home",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+                Icon(
+                  Icons.location_on_rounded,
+                  color: Colors.red,
+                  size: 30,
                 ),
-                Text(
-                  'Khatra mahal, Shaitan gali, Shamshaan ke...',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
-                  ),
-                )
+                SizedBox(
+                  width: 2,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Home",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 18.5,
+                      ),
+                    ),
+                    Text(
+                      'Khatra mahal, Shaitan gali, Shamshaan ke...',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
       body: PageView(

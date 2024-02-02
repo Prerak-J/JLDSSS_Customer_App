@@ -1,6 +1,4 @@
 import 'dart:io';
-// import 'package:customer_app/pages/home_page.dart';
-// import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/screens/flash_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
