@@ -1,6 +1,8 @@
 import 'package:customer_app/pages/delivery_page.dart';
 import 'package:customer_app/pages/profile_page.dart';
+import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var _userData = {};
+  bool _isLoading = false;
+  String address = '';
   int _page = 0;
   late PageController pageController;
 
@@ -19,7 +24,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     pageController = PageController();
+    fetch();
     // print('I HAVE COME');
+  }
+
+  void fetch() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _userData = (await AuthMethods().getUserData(
+      FirebaseAuth.instance.currentUser!.uid,
+    ))!;
+    setState(() {
+      _isLoading = false;
+      address = _userData['address'];
+    });
   }
 
   void navigationTapped(int page) {
@@ -42,89 +61,91 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40),
-        child: AppBar(
-          elevation: 7,
-          shadowColor: appBarGreen,
-          backgroundColor: appBarGreen.withOpacity(0.96),
-          automaticallyImplyLeading: false,
-          title: const Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_on_rounded,
-                  color: Colors.red,
-                  size: 30,
-                ),
-                SizedBox(
-                  width: 2,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Home",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 18.5,
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            backgroundColor: Colors.white,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(40),
+              child: AppBar(
+                elevation: 7,
+                shadowColor: appBarGreen,
+                backgroundColor: appBarGreen.withOpacity(0.96),
+                automaticallyImplyLeading: false,
+                title: Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.red,
+                        size: 30,
                       ),
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Home",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 18.5,
+                            ),
+                          ),
+                          Text(
+                            address,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            body: PageView(
+              controller: pageController,
+              onPageChanged: onPageChanged,
+              physics: const NeverScrollableScrollPhysics(),
+              children: const [
+                DeliveryScreen(),
+                Center(
+                  child: Text(
+                    'HISTORRYYY SCREEEENNN',
+                    style: TextStyle(
+                      color: Colors.black,
                     ),
-                    Text(
-                      'Khatra mahal, Shaitan gali, Shamshaan ke...',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
+                  ),
+                ),
+                ProfileScreen(),
+              ],
+            ),
+            bottomNavigationBar: CupertinoTabBar(
+              onTap: navigationTapped,
+              backgroundColor: Colors.white,
+              currentIndex: _page,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.delivery_dining),
+                  label: 'Delivery',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.history),
+                  label: 'History',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-      body: PageView(
-        controller: pageController,
-        onPageChanged: onPageChanged,
-        physics: const NeverScrollableScrollPhysics(),
-        children: const [
-          DeliveryScreen(),
-          Center(
-            child: Text(
-              'HISTORRYYY SCREEEENNN',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          ProfileScreen(),
-        ],
-      ),
-      bottomNavigationBar: CupertinoTabBar(
-        onTap: navigationTapped,
-        backgroundColor: Colors.white,
-        currentIndex: _page,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.delivery_dining),
-            label: 'Delivery',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

@@ -54,11 +54,13 @@ class AuthMethods {
         String? email = snapshot.get('email');
         String? phone = snapshot.get('phone');
         String? password = snapshot.get('password');
+        String? address = snapshot.get('address');
         Map<String, dynamic> userData = {
           'name': name,
           'email': email,
           'phone': phone,
           'password': password,
+          'address': address,
         };
         return userData;
       } else {
