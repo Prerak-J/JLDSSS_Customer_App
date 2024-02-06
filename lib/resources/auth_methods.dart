@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -193,6 +194,31 @@ class AuthMethods {
       User? curr = _auth.currentUser!;
       await curr.delete();
       await _firestore.collection('users').doc(curr.uid).delete();
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
+  }
+
+  //PLACE ORDER
+  Future<String> addActiveOrder({
+    required String resName,
+    required List<String> orders,
+    required List<String> prices,
+    required double total,
+  }) async {
+    String res = 'Some error occured';
+    try {
+      User? curr = _auth.currentUser!;
+      String? uuid = const Uuid().v4();
+      await _firestore.collection('orders').doc(uuid).set({
+        'uid': curr.uid,
+        'resName': resName,
+        'orders': orders,
+        'prices': prices,
+        'total': total,
+      });
       res = 'success';
     } catch (e) {
       res = e.toString();

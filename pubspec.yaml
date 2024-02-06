@@ -38,6 +38,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.3.8
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_lints: ^2.0.0

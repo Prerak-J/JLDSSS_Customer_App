@@ -1,5 +1,6 @@
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:customer_app/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   int items = 0;
+  List<String> orders = [];
+  List<String> prices = [];
   List<int> values = [];
   List<int> indice = [];
   double sum = 0;
@@ -63,8 +66,35 @@ class _OrderScreenState extends State<OrderScreen> {
     });
   }
 
-  void placeOrder(){
-    
+  void placeOrder() async {
+    setState(() {
+      _isLoading = true;
+    });
+    for (int i = 0; i < values.length; i++) {
+      orders.add('${widget.snap['foodlist'][indice[i]]['NAME']} x ${values[i].toString()}');
+      prices.add('₹${(widget.snap['foodlist'][indice[i]]['PRICE'] * values[i]).toString()}');
+    }
+
+    String res = await AuthMethods().addActiveOrder(
+      resName: widget.snap['name'],
+      orders: orders,
+      prices: prices,
+      total: sum,
+    );
+
+    if (context.mounted) {
+      if (res == 'success') {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        showSnackBar('Order Placed !', context);
+      } else {
+        showSnackBar(res, context);
+      }
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -358,6 +388,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   fontSize: 13.5,
                                   color: Colors.black54,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
