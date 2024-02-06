@@ -1,4 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:customer_app/pages/order_page.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
@@ -35,15 +38,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     popUpAnimationController.dispose();
   }
 
-  void update(int count, int index) {
-    setState(() {
-      counter[index] = count;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final menuWidth = MediaQuery.of(context).size.width * 0.955;
+    String symbol = widget.snap['type'].contains('Veg/Non-Veg') ? '🥬🍖' : '🥬';
     return Scaffold(
       body: Stack(
         children: [
@@ -79,22 +77,27 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                       alignment: Alignment.topCenter,
                       child: Column(
                         children: [
-                          Text(
-                            widget.snap['name'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
+                          Container(
+                            constraints: const BoxConstraints(maxHeight: 55),
+                            child: AutoSizeText(
+                              widget.snap['name'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 28,
+                              ),
+                              minFontSize: 22,
+                              // maxFontSize: 20,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(
                             height: 8,
                           ),
-                          const Text(
-                            '  North-Indian ∘ Veg/Non-Veg 🥬🍖',
-                            style: TextStyle(fontSize: 14),
+                          Text(
+                            '  ${widget.snap['type']} $symbol',
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ],
                       ),
@@ -161,25 +164,17 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                     children: [
                                       Align(
                                         alignment: const Alignment(-1.02, -1),
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.crop_square_sharp,
-                                              color: widget.snap['foodlist'][index]['type'] == 'veg'
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                              size: 18,
-                                            ),
-                                            Icon(
-                                              Icons.circle,
-                                              color: widget.snap['foodlist'][index]['type'] == 'veg'
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                              size: 7,
-                                            ),
-                                          ],
-                                        ),
+                                        child: widget.snap['foodlist'][index]['type'] == 'veg'
+                                            ? const Icon(
+                                                CupertinoIcons.dot_square,
+                                                color: Color(0xff14801b),
+                                                size: 18,
+                                              )
+                                            : const Icon(
+                                                CupertinoIcons.arrowtriangle_up_square,
+                                                color: Color(0xff8a4528),
+                                                size: 18,
+                                              ),
                                       ),
                                       const SizedBox(
                                         height: 4,
@@ -324,10 +319,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                   child: const Text(
                                                     'ADD +',
                                                     style: TextStyle(
-                                                      color: secondaryGreen,
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600
-                                                    ),
+                                                        color: secondaryGreen,
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w600),
                                                   ),
                                                 ),
                                               ),
@@ -345,6 +339,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   childCount: widget.snap['foodlist'].length,
                 ),
               ),
+              SliverToBoxAdapter(
+                child: Container(
+                  height: 80,
+                ),
+              ),
             ],
           ),
           Align(
@@ -353,6 +352,15 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
                   .animate(popUpAnimationController),
               child: InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderScreen(
+                      snap: widget.snap,
+                      counter: counter,
+                    ),
+                  ),
+                ),
                 child: Container(
                   decoration: BoxDecoration(
                     color: tealColor.withGreen(45),
@@ -416,92 +424,94 @@ class _BuildSheetState extends State<BuildSheet> {
       builder: (_, controller) => Scaffold(
         backgroundColor: lightGrey,
         body: Container(
-          color: lightGreen,
+          color: Colors.white,
           width: double.infinity,
-          child: Container(
-            height: 150,
-            padding: const EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 8,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                  alignment: Alignment.topLeft,
-                  // color: lightGreen,
-                  width: widget.menuwidth * 0.63,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: const Alignment(-1.02, -1),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Icon(
-                              Icons.crop_square_sharp,
-                              color: widget.snap['foodlist'][widget.index]['type'] == 'veg'
-                                  ? Colors.green
-                                  : Colors.red,
-                              size: 18,
-                            ),
-                            Icon(
-                              Icons.circle,
-                              color: widget.snap['foodlist'][widget.index]['type'] == 'veg'
-                                  ? Colors.green
-                                  : Colors.red,
-                              size: 7,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        widget.snap['foodlist'][widget.index]['NAME'],
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        '₹${widget.snap['foodlist'][widget.index]['PRICE'].toString()}',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: parrotGreen,
-                        ),
-                      ),
-                      Text(
-                        widget.snap['foodlist'][widget.index]['DESCRIPTION'],
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
+          child: Column(
+            children: [
+              Container(
+                color: lightGreen,
+                height: 150,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 8,
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  // color: Colors.green,
-                  width: widget.menuwidth * 0.37,
-                  alignment: Alignment.topCenter,
-                  child: Column(
-                    // alignment: const Alignment(0, 1.5),
-                    children: [
-                      SizedBox(
-                        height: 110,
-                        width: 110,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: Image.network(
-                            'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
-                            height: 120,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      alignment: Alignment.topLeft,
+                      // color: lightGreen,
+                      width: widget.menuwidth * 0.63,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: const Alignment(-1.02, -1),
+                            child: widget.snap['foodlist'][widget.index]['type'] == 'veg'
+                                ? const Icon(
+                                    CupertinoIcons.dot_square,
+                                    color: Color(0xff14801b),
+                                    size: 18,
+                                  )
+                                : const Icon(
+                                    CupertinoIcons.arrowtriangle_up_square,
+                                    color: Color(0xff8a4528),
+                                    size: 18,
+                                  ),
                           ),
-                        ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            widget.snap['foodlist'][widget.index]['NAME'],
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            '₹${widget.snap['foodlist'][widget.index]['PRICE'].toString()}',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: parrotGreen,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      // color: Colors.green,
+                      width: widget.menuwidth * 0.37,
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        // alignment: const Alignment(0, 1.5),
+                        children: [
+                          SizedBox(
+                            height: 110,
+                            width: 110,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(18),
+                              child: Image.network(
+                                'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
+                                height: 120,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                alignment: AlignmentDirectional.topStart,
+                color: Colors.white,
+                child: Text(
+                  widget.snap['foodlist'][widget.index]['DESCRIPTION'],
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                ),
+              ),
+            ],
           ),
         ),
         persistentFooterButtons: [
@@ -571,7 +581,7 @@ class _BuildSheetState extends State<BuildSheet> {
                 decoration: BoxDecoration(
                   border: Border.all(color: secondaryGreen, width: 2),
                   borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).primaryColor,
+                  color: const Color.fromARGB(255, 6, 79, 53),
                 ),
                 child: InkWell(
                   onTap: () {

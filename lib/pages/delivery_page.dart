@@ -37,8 +37,9 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                 automaticallyImplyLeading: false,
                 scrolledUnderElevation: 5,
                 floating: true,
-                flexibleSpace: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 5),
+                flexibleSpace: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
+                  height: 50,
                   child: SearchBar(
                     shape: MaterialStatePropertyAll(
                       ContinuousRectangleBorder(
@@ -53,9 +54,13 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                     leading: const Icon(Icons.search),
                     hintText: 'Restaurants or dishes...',
                     hintStyle: const MaterialStatePropertyAll(
-                      TextStyle(fontStyle: FontStyle.italic, wordSpacing: 0.6, letterSpacing: 0.3),
+                      TextStyle(
+                        fontStyle: FontStyle.italic,
+                        wordSpacing: 0.6,
+                        letterSpacing: 0.3,
+                      ),
                     ),
-                    constraints: const BoxConstraints(minHeight: 100),
+                    // constraints: const BoxConstraints(maxHeight: 50),
                     controller: _searchController,
                     shadowColor: const MaterialStatePropertyAll(lightGrey),
                     side: MaterialStatePropertyAll(
@@ -69,13 +74,19 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
+                    String symbol =
+                        snapshot.data!.docs[index].data()['type'].contains('Veg/Non-Veg')
+                            ? '🥬🍖'
+                            : '🥬';
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                       child: InkWell(
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MenuScreen(snap: snapshot.data!.docs[index].data(),),
+                            builder: (context) => MenuScreen(
+                              snap: snapshot.data!.docs[index].data(),
+                            ),
                           ),
                         ),
                         child: Container(
@@ -88,36 +99,78 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                                 offset: Offset(0, 3),
                               ),
                             ],
-                            gradient: const LinearGradient(
-                              colors: [lightGreen, lightGreen, Colors.white, Colors.white],
-                              stops: [0.0, 0.8, 0.8, 1],
-                              end: Alignment.bottomCenter,
-                              begin: Alignment.topCenter,
-                            ),
-                            // color: lightGreen,
                           ),
                           height: 280,
                           width: MediaQuery.of(context).size.width,
                           child: Stack(
                             children: [
-                              Container(
-                                alignment: const Alignment(-0.92, 0.88),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Text(
-                                  snapshot.data!.docs[index].data()['name'],
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                                  width: MediaQuery.of(context).size.width,
+                                  // height: 200,
+                                  fit: BoxFit.contain,
+                                  cacheWidth: (MediaQuery.of(context).size.width *
+                                          MediaQuery.of(context).devicePixelRatio)
+                                      .round(),
                                 ),
                               ),
-                              const Center(
-                                child: Icon(Icons.restaurant_menu),
-                              )
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Material(
+                                  borderRadius: const BorderRadius.vertical(
+                                    bottom: Radius.circular(12),
+                                  ),
+                                  elevation: 8,
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.vertical(
+                                        bottom: Radius.circular(12),
+                                      ),
+                                    ),
+                                    height: 60,
+                                    alignment: const Alignment(-0.92, 0.81),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          // alignment: const Alignment(-0.92, 0.81),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                          ),
+                                          child: Text(
+                                            snapshot.data!.docs[index].data()['name'],
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        Container(
+                                          // alignment: const Alignment(-0.88, 0.89),
+                                          padding: const EdgeInsets.only(bottom: 8.6, left: 12),
+
+                                          child: Text(
+                                            '${snapshot.data!.docs[index].data()['type']} $symbol',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
