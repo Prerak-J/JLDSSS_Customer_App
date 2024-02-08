@@ -207,17 +207,27 @@ class AuthMethods {
     required List<String> orders,
     required List<String> prices,
     required double total,
+    required String name,
+    required String email,
+    required String phone,
+    required String address,
   }) async {
     String res = 'Some error occured';
     try {
       User? curr = _auth.currentUser!;
       String? uuid = const Uuid().v4();
+      DateTime datePlaced = DateTime.now();
       await _firestore.collection('orders').doc(uuid).set({
         'uid': curr.uid,
         'resName': resName,
         'orders': orders,
         'prices': prices,
         'total': total,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'datePlaced': datePlaced,
       });
       res = 'success';
     } catch (e) {

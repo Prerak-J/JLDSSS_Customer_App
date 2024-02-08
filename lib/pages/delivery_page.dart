@@ -71,6 +71,39 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                   ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Container(
+                          height: 0.5,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          color: secondaryGreen,
+                        ),
+                      ),
+                      const Text(
+                        'RESTAURANTS',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: secondaryGreen,
+                          letterSpacing: 8,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          height: 0.8,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          color: secondaryGreen,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -179,7 +212,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                   },
                   childCount: snapshot.data!.docs.length,
                 ),
-              )
+              ),
             ],
           );
         });

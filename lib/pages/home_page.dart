@@ -1,4 +1,5 @@
 import 'package:customer_app/pages/delivery_page.dart';
+import 'package:customer_app/pages/history_screen.dart';
 import 'package:customer_app/pages/profile_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
@@ -116,14 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               children: const [
                 DeliveryScreen(),
-                Center(
-                  child: Text(
-                    'HISTORRYYY SCREEEENNN',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                HistoryScreen(),
                 ProfileScreen(),
               ],
             ),

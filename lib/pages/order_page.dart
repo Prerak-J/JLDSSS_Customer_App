@@ -80,6 +80,10 @@ class _OrderScreenState extends State<OrderScreen> {
       orders: orders,
       prices: prices,
       total: sum,
+      name: name,
+      email: email,
+      phone: phone,
+      address: address,
     );
 
     if (context.mounted) {
