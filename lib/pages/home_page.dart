@@ -67,46 +67,49 @@ class _HomeScreenState extends State<HomeScreen> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(40),
+              preferredSize: const Size.fromHeight(52),
               child: AppBar(
                 elevation: 7,
                 shadowColor: appBarGreen,
                 backgroundColor: appBarGreen.withOpacity(0.96),
                 automaticallyImplyLeading: false,
-                title: Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_rounded,
-                        color: Colors.red,
-                        size: 30,
-                      ),
-                      const SizedBox(
-                        width: 2,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Home",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 18.5,
+                title: Transform.translate(
+                  offset: const Offset(0, 8),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on_rounded,
+                          color: Colors.red,
+                          size: 28,
+                        ),
+                        const SizedBox(
+                          width: 2,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Home",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          Text(
-                            address,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
+                            Text(
+                              address,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

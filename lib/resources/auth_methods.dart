@@ -207,10 +207,13 @@ class AuthMethods {
     required List<String> orders,
     required List<String> prices,
     required double total,
+    required double grdTotal,
+    required double toPay,
     required String name,
     required String email,
     required String phone,
     required String address,
+    required String resUid,
   }) async {
     String res = 'Some error occured';
     try {
@@ -220,9 +223,12 @@ class AuthMethods {
       await _firestore.collection('orders').doc(uuid).set({
         'uid': curr.uid,
         'resName': resName,
+        'resUid': resUid,
         'orders': orders,
         'prices': prices,
         'total': total,
+        'grdTotal': grdTotal,
+        'toPay': toPay,
         'name': name,
         'email': email,
         'phone': phone,

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
@@ -25,6 +26,8 @@ class _OrderScreenState extends State<OrderScreen> {
   List<int> values = [];
   List<int> indice = [];
   double sum = 0;
+  double grdTotal = 0;
+  double toPay = 0;
   var _userData = {};
   String name = '';
   String email = '';
@@ -46,6 +49,8 @@ class _OrderScreenState extends State<OrderScreen> {
     for (int i = 0; i < values.length; i++) {
       sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
     }
+    grdTotal = sum + ((12 * sum) / 100) + 21.0 + 3.0;
+    toPay = grdTotal - 60.0;
     _isLoading = false;
     fetch();
   }
@@ -67,38 +72,47 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   void placeOrder() async {
-    setState(() {
-      _isLoading = true;
-    });
-    for (int i = 0; i < values.length; i++) {
-      orders.add('${widget.snap['foodlist'][indice[i]]['NAME']} x ${values[i].toString()}');
-      prices.add('₹${(widget.snap['foodlist'][indice[i]]['PRICE'] * values[i]).toString()}');
-    }
-
-    String res = await AuthMethods().addActiveOrder(
-      resName: widget.snap['name'],
-      orders: orders,
-      prices: prices,
-      total: sum,
-      name: name,
-      email: email,
-      phone: phone,
-      address: address,
-    );
-
-    if (context.mounted) {
-      if (res == 'success') {
-        Navigator.pop(context);
-        Navigator.pop(context);
-        showSnackBar('Order Placed !', context);
-      } else {
-        showSnackBar(res, context);
+    if (values.sum > 0) {
+      setState(() {
+        _isLoading = true;
+      });
+      for (int i = 0; i < values.length; i++) {
+        if (values[i] > 0) {
+          orders.add('${widget.snap['foodlist'][indice[i]]['NAME']} x ${values[i].toString()}');
+          prices.add('₹${(widget.snap['foodlist'][indice[i]]['PRICE'] * values[i]).toString()}');
+        }
       }
-    }
 
-    setState(() {
-      _isLoading = false;
-    });
+      String res = await AuthMethods().addActiveOrder(
+        resName: widget.snap['name'],
+        resUid: widget.snap['resUid'],
+        orders: orders,
+        prices: prices,
+        total: sum,
+        grdTotal: grdTotal,
+        toPay: toPay,
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
+      );
+
+      if (context.mounted) {
+        if (res == 'success') {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          showSnackBar('Order Placed !', context);
+        } else {
+          showSnackBar(res, context);
+        }
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      showSnackBar('Please add a food item', context);
+    }
   }
 
   @override
@@ -112,6 +126,7 @@ class _OrderScreenState extends State<OrderScreen> {
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  floating: true,
                   leadingWidth: 35,
                   title: Text(
                     widget.snap['name'] ?? '',
@@ -221,6 +236,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                                 (widget.snap['foodlist'][indice[i]]
                                                                     ['PRICE']);
                                                           }
+                                                          toPay = sum +
+                                                              ((12 * sum) / 100) +
+                                                              21.0 +
+                                                              3.0 -
+                                                              60.0;
                                                         })
                                                       : {},
                                                   child: const Icon(
@@ -256,6 +276,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                             (widget.snap['foodlist'][indice[i]]
                                                                 ['PRICE']);
                                                       }
+                                                      toPay = sum +
+                                                          ((12 * sum) / 100) +
+                                                          21.0 +
+                                                          3.0 -
+                                                          60.0;
                                                     });
                                                   },
                                                   child: const Icon(
@@ -288,6 +313,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         (widget.snap['foodlist'][indice[i]]
                                                             ['PRICE']);
                                                   }
+                                                  toPay =
+                                                      sum + ((12 * sum) / 100) + 21.0 + 3.0 - 60.0;
                                                 });
                                               },
                                               child: Center(
@@ -334,10 +361,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                     const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 8,
-                      ),
+                      padding: EdgeInsets.fromLTRB(15, 12, 15, 0),
                       child: Text(
                         'Delivering to :',
                         style: TextStyle(
@@ -399,6 +423,242 @@ class _OrderScreenState extends State<OrderScreen> {
                         ),
                       ),
                     ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
+                      child: Text(
+                        'Available discount coupons :',
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(8),
+                        elevation: 5,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 0,
+                          ),
+                          onTap: () => showModalBottomSheet(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                            ),
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) => DiscountSheet(
+                              snap: widget.snap,
+                              menuwidth: menuWidth,
+                            ),
+                          ),
+                          dense: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          tileColor: lightGrey,
+                          title: const Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: parrotGreen,
+                              ),
+                              Text(
+                                " You saved ₹60 with 'ONLY4U'",
+                                style: TextStyle(fontSize: 13.5),
+                              ),
+                            ],
+                          ),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_right,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
+                      child: Text(
+                        'Bill Summary :',
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 2,
+                      ),
+                      child: Card(
+                        elevation: 4,
+                        margin: const EdgeInsets.all(0),
+                        color: lightGrey,
+                        surfaceTintColor: lightGrey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Item total',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${sum.toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'GST and restaurant charges',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${((12 * sum) / 100).toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Delivery partner fee for 5 km',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹21.0',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Platform fee',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹3.0',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              const Divider(
+                                thickness: 1,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Grand Total',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${grdTotal.toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Restaurant coupon - (ONLY4U)',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    '- ₹60.0',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'To pay',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${toPay.toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ]),
                 ),
               ],
@@ -426,7 +686,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '₹${sum.toString()}',
+                              '₹${toPay.toString()}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -468,5 +728,74 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
             ],
           );
+  }
+}
+
+class DiscountSheet extends StatefulWidget {
+  final Map<String, dynamic> snap;
+  final double menuwidth;
+  const DiscountSheet({
+    super.key,
+    required this.snap,
+    required this.menuwidth,
+  });
+
+  @override
+  State<DiscountSheet> createState() => _DiscountSheetState();
+}
+
+class _DiscountSheetState extends State<DiscountSheet> {
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      maxChildSize: 0.88,
+      initialChildSize: 0.7,
+      minChildSize: 0.32,
+      expand: false,
+      builder: (_, scrollController) => Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(40),
+            child: AppBar(
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              title: Container(
+                width: widget.menuwidth * 0.2,
+                height: 5,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey,
+                ),
+                padding: const EdgeInsets.only(top: 12),
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 500,
+                  width: double.infinity,
+                  color: Colors.lightGreen,
+                  child: const Center(
+                    child: Text('DISCOUNT COUPOONSSSS'),
+                  ),
+                ),
+                Container(
+                  height: 500,
+                  width: double.infinity,
+                  color: Colors.lightBlueAccent,
+                  child: const Center(child: Text('DISCOUNT COUPOONSSSS')),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -84,7 +84,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 24,
+                          vertical: 16,
                         ),
                         child: Card(
                           elevation: 4,
@@ -146,13 +146,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           ),
                                         ),
                                       ),
-                                      trailing: Text(
-                                        orderSnap['prices'][index],
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+                                      // trailing: Text(
+                                      //   orderSnap['prices'][index],
+                                      //   style: const TextStyle(
+                                      //     fontSize: 14,
+                                      //     fontWeight: FontWeight.w500,
+                                      //   ),
+                                      // ),
                                     ),
                                     const Divider(
                                       height: 1,
@@ -180,7 +180,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     ),
                                     Flexible(child: Container()),
                                     Text(
-                                      'Total: ₹${orderSnap['total']}',
+                                      '₹${orderSnap['toPay']}',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:customer_app/pages/order_page.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
@@ -124,6 +125,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                           ),
                         ),
                         Container(
+                          color: widget.snap['foodlist'][index]['AVAILABLE']
+                              ? Colors.white
+                              : Colors.grey[400],
                           height: 190,
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
@@ -217,6 +221,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                         child: Image.network(
                                           'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
                                           height: 120,
+                                          color: widget.snap['foodlist'][index]['AVAILABLE']
+                                              ? null
+                                              : Colors.grey,
+                                          colorBlendMode: BlendMode.hue,
                                         ),
                                       ),
                                     ),
@@ -298,15 +306,21 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             decoration: BoxDecoration(
                                               border: Border.all(color: secondaryGreen, width: 2),
                                               borderRadius: BorderRadius.circular(10),
-                                              color: lightGreen,
+                                              color: widget.snap['foodlist'][index]['AVAILABLE']
+                                                  ? lightGreen
+                                                  : Colors.grey,
                                             ),
                                             child: InkWell(
                                               onTap: () {
-                                                setState(() {
-                                                  counter[index]++;
-                                                  sum = counter.sum;
-                                                  popUpAnimationController.forward();
-                                                });
+                                                if (widget.snap['foodlist'][index]['AVAILABLE']) {
+                                                  setState(() {
+                                                    counter[index]++;
+                                                    sum = counter.sum;
+                                                    popUpAnimationController.forward();
+                                                  });
+                                                } else {
+                                                  showSnackBar('Item unavailable!', context);
+                                                }
                                               },
                                               child: Center(
                                                 child: Container(
@@ -314,8 +328,12 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                   padding: const EdgeInsets.symmetric(
                                                       horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(3),
-                                                      color: lightGreen),
+                                                    borderRadius: BorderRadius.circular(3),
+                                                    color: widget.snap['foodlist'][index]
+                                                            ['AVAILABLE']
+                                                        ? lightGreen
+                                                        : Colors.grey,
+                                                  ),
                                                   child: const Text(
                                                     'ADD +',
                                                     style: TextStyle(
@@ -581,11 +599,17 @@ class _BuildSheetState extends State<BuildSheet> {
                 decoration: BoxDecoration(
                   border: Border.all(color: secondaryGreen, width: 2),
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 6, 79, 53),
+                  color: widget.snap['foodlist'][widget.index]['AVAILABLE']
+                      ? const Color.fromARGB(255, 6, 79, 53)
+                      : Colors.grey,
                 ),
                 child: InkWell(
                   onTap: () {
-                    Navigator.pop(context, counter);
+                    if (widget.snap['foodlist'][widget.index]['AVAILABLE']) {
+                      Navigator.pop(context, counter);
+                    } else {
+                      showSnackBar('Item unavailable', context);
+                    }
                   },
                   child: Center(
                     child: Text(
@@ -596,7 +620,7 @@ class _BuildSheetState extends State<BuildSheet> {
                 ),
               ),
             ],
-          )
+          ),
         ],
         persistentFooterAlignment: AlignmentDirectional.centerEnd,
       ),

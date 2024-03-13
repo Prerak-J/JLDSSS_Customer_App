@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/pages/menu_page.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class DeliveryScreen extends StatefulWidget {
@@ -114,14 +115,20 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                       child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuScreen(
-                              snap: snapshot.data!.docs[index].data(),
-                            ),
-                          ),
-                        ),
+                        onTap: () {
+                          if (snapshot.data!.docs[index].data()['open']) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MenuScreen(
+                                  snap: snapshot.data!.docs[index].data(),
+                                ),
+                              ),
+                            );
+                          } else {
+                            showSnackBar('This restaurant is closed', context);
+                          }
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
@@ -147,6 +154,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                                   cacheWidth: (MediaQuery.of(context).size.width *
                                           MediaQuery.of(context).devicePixelRatio)
                                       .round(),
+                                  color: snapshot.data!.docs[index].data()['open']
+                                      ? null
+                                      : Colors.grey,
+                                  colorBlendMode: BlendMode.hue,
                                 ),
                               ),
                               Align(
