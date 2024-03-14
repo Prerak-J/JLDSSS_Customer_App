@@ -23,7 +23,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
   Widget build(BuildContext context) {
     super.build(context);
     return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('restaurants').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('restaurants')
+            .where('legit', isEqualTo: true)
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
