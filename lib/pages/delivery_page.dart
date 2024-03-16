@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/pages/menu_page.dart';
+import 'package:customer_app/screens/global_search_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -37,40 +38,50 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                backgroundColor: Colors.white,
+                toolbarHeight: 45,
+                backgroundColor: lightGrey.withOpacity(0),
                 automaticallyImplyLeading: false,
-                scrolledUnderElevation: 5,
+                elevation: 8,
+                // shadowColor: lightGrey,
                 floating: true,
-                flexibleSpace: Container(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 2),
-                  height: 50,
-                  child: SearchBar(
-                    shape: MaterialStatePropertyAll(
-                      ContinuousRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                flexibleSpace: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) => const GlobalSearchScreen()),
                     ),
-                    padding: const MaterialStatePropertyAll(
-                      EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                    ),
-                    leading: const Icon(Icons.search),
-                    hintText: 'Restaurants or dishes...',
-                    hintStyle: const MaterialStatePropertyAll(
-                      TextStyle(
-                        fontStyle: FontStyle.italic,
-                        wordSpacing: 0.6,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    // constraints: const BoxConstraints(maxHeight: 50),
-                    controller: _searchController,
-                    shadowColor: const MaterialStatePropertyAll(lightGrey),
-                    side: MaterialStatePropertyAll(
-                      BorderSide(
-                        color: parrotGreen.withOpacity(0.3),
-                      ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(8),
+                    height: 45,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: appBarGreen.withOpacity(0.6),
+                          width: 1.4,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white),
+                    child: const Row(
+                      children: [
+                        Icon(
+                          Icons.search_rounded,
+                          color: parrotGreen,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Text(
+                          'Restaurants and Dishes...',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            wordSpacing: 0.5,
+                            letterSpacing: 0.3,
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
