@@ -234,6 +234,7 @@ class AuthMethods {
         'phone': phone,
         'address': address,
         'datePlaced': datePlaced,
+        'orderId': uuid,
       });
       res = 'success';
     } catch (e) {

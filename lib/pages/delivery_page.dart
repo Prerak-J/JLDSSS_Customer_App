@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/pages/menu_page.dart';
 import 'package:customer_app/screens/global_search_screen.dart';
 import 'package:customer_app/utils/colors.dart';
-import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class DeliveryScreen extends StatefulWidget {
@@ -73,7 +72,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                           width: 12,
                         ),
                         Text(
-                          'Restaurants and Dishes...',
+                          'Search Restaurants...',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
@@ -130,18 +129,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                       child: InkWell(
                         onTap: () {
-                          if (snapshot.data!.docs[index].data()['open']) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MenuScreen(
-                                  snap: snapshot.data!.docs[index].data(),
-                                ),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MenuScreen(
+                                snap: snapshot.data!.docs[index].data(),
                               ),
-                            );
-                          } else {
-                            showSnackBar('This restaurant is closed', context);
-                          }
+                            ),
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -229,6 +224,20 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                                   ),
                                 ),
                               ),
+                              !(snapshot.data!.docs[index].data()['open'])
+                                  ? const Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Text(
+                                          'Closed',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Container(),
                             ],
                           ),
                         ),

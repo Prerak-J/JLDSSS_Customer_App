@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
         : Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: darkWhite,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(52),
               child: AppBar(

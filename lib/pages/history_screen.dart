@@ -66,6 +66,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   const SliverAppBar(
                     floating: true,
                     elevation: 12,
+                    backgroundColor: darkWhite,
                     shadowColor: lightGrey,
                     centerTitle: true,
                     automaticallyImplyLeading: false,

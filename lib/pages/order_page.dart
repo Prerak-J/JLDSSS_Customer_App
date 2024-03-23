@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:customer_app/resources/auth_methods.dart';
+import 'package:customer_app/screens/map_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,9 +26,9 @@ class _OrderScreenState extends State<OrderScreen> {
   List<String> prices = [];
   List<int> values = [];
   List<int> indice = [];
-  double sum = 0;
-  double grdTotal = 0;
-  double toPay = 0;
+  double sum = 0.00;
+  double grdTotal = 0.00;
+  double toPay = 0.00;
   var _userData = {};
   String name = '';
   String email = '';
@@ -49,8 +50,8 @@ class _OrderScreenState extends State<OrderScreen> {
     for (int i = 0; i < values.length; i++) {
       sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
     }
-    grdTotal = sum + ((12 * sum) / 100) + 21.0 + 3.0;
-    toPay = grdTotal - 60.0;
+    grdTotal = sum + ((12 * sum) / 100) + 21.00 + 3.00;
+    toPay = grdTotal - 60.00;
     _isLoading = false;
     fetch();
   }
@@ -89,8 +90,8 @@ class _OrderScreenState extends State<OrderScreen> {
         orders: orders,
         prices: prices,
         total: sum,
-        grdTotal: grdTotal,
-        toPay: toPay,
+        grdTotal: double.parse(grdTotal.toStringAsFixed(2)),
+        toPay: double.parse(toPay.toStringAsFixed(2)),
         name: name,
         email: email,
         phone: phone,
@@ -99,9 +100,14 @@ class _OrderScreenState extends State<OrderScreen> {
 
       if (context.mounted) {
         if (res == 'success') {
-          Navigator.pop(context);
-          Navigator.pop(context);
           showSnackBar('Order Placed !', context);
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MapScreen(),
+            ),
+            ((route) => route.isFirst),
+          );
         } else {
           showSnackBar(res, context);
         }
@@ -227,22 +233,26 @@ class _OrderScreenState extends State<OrderScreen> {
                                             child: Row(
                                               children: [
                                                 InkWell(
-                                                  onTap: () => values[index] > 0
-                                                      ? setState(() {
-                                                          values[index]--;
-                                                          sum = 0;
-                                                          for (int i = 0; i < values.length; i++) {
-                                                            sum += values[i] *
-                                                                (widget.snap['foodlist'][indice[i]]
-                                                                    ['PRICE']);
-                                                          }
-                                                          toPay = sum +
-                                                              ((12 * sum) / 100) +
-                                                              21.0 +
-                                                              3.0 -
-                                                              60.0;
-                                                        })
-                                                      : {},
+                                                  onTap: () {
+                                                    if (values[index] > 0 && values.sum > 1) {
+                                                      setState(() {
+                                                        values[index]--;
+                                                        sum = 0.00;
+                                                        for (int i = 0; i < values.length; i++) {
+                                                          sum += values[i] *
+                                                              (widget.snap['foodlist'][indice[i]]
+                                                                  ['PRICE']);
+                                                        }
+                                                        toPay = sum +
+                                                            ((12 * sum) / 100) +
+                                                            21.00 +
+                                                            3.00 -
+                                                            60.00;
+                                                      });
+                                                    } else if (values.sum <= 1) {
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
                                                   child: const Icon(
                                                     Icons.remove,
                                                     color: secondaryGreen,
@@ -270,7 +280,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   onTap: () {
                                                     setState(() {
                                                       values[index]++;
-                                                      sum = 0;
+                                                      sum = 0.00;
                                                       for (int i = 0; i < values.length; i++) {
                                                         sum += values[i] *
                                                             (widget.snap['foodlist'][indice[i]]
@@ -278,9 +288,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                       }
                                                       toPay = sum +
                                                           ((12 * sum) / 100) +
-                                                          21.0 +
-                                                          3.0 -
-                                                          60.0;
+                                                          21.00 +
+                                                          3.00 -
+                                                          60.00;
                                                     });
                                                   },
                                                   child: const Icon(
@@ -307,14 +317,17 @@ class _OrderScreenState extends State<OrderScreen> {
                                               onTap: () {
                                                 setState(() {
                                                   values[index]++;
-                                                  sum = 0;
+                                                  sum = 0.00;
                                                   for (int i = 0; i < values.length; i++) {
                                                     sum += values[i] *
                                                         (widget.snap['foodlist'][indice[i]]
                                                             ['PRICE']);
                                                   }
-                                                  toPay =
-                                                      sum + ((12 * sum) / 100) + 21.0 + 3.0 - 60.0;
+                                                  toPay = sum +
+                                                      ((12 * sum) / 100) +
+                                                      21.00 +
+                                                      3.00 -
+                                                      60.00;
                                                 });
                                               },
                                               child: Center(
@@ -538,7 +551,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹${((12 * sum) / 100).toString()}',
+                                    '₹${((12 * sum) / 100).toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w500,
@@ -607,7 +620,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹${grdTotal.toString()}',
+                                    '₹${grdTotal.toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -646,7 +659,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹${toPay.toString()}',
+                                    '₹${toPay.toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -686,7 +699,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '₹${toPay.toString()}',
+                              '₹${toPay.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,

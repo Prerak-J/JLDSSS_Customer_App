@@ -8,3 +8,4 @@ const appBarGreen = Color.fromARGB(255, 2, 35, 25);
 const darkRed = Color.fromARGB(255, 80, 4, 0);
 const lightGrey = Color.fromARGB(255, 220, 220, 220);
 const parrotGreen = Color.fromARGB(255, 31, 129, 34);
+const darkWhite = Color.fromARGB(255, 232, 232, 232);

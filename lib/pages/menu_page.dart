@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:customer_app/pages/order_page.dart';
+import 'package:customer_app/screens/food_search_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,7 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateMixin {
+  String selectedCategory = "All items";
   List<int> counter = [];
   int sum = 0;
   late AnimationController popUpAnimationController = AnimationController(
@@ -44,6 +46,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     final menuWidth = MediaQuery.of(context).size.width * 0.955;
     String symbol = widget.snap['type'].contains('Veg/Non-Veg') ? '🥬🍖' : '🥬';
     return Scaffold(
+      backgroundColor: lightGrey,
       body: Stack(
         children: [
           CustomScrollView(
@@ -51,6 +54,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               SliverAppBar(
                 elevation: 2,
                 shadowColor: lightGrey,
+                backgroundColor: lightGrey,
                 floating: true,
                 actions: [
                   Padding(
@@ -60,7 +64,14 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                         Icons.search,
                         size: 26,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FoodSearchScreen(snap: widget.snap),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -106,6 +117,22 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   )
                 ]),
               ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          categoryName('All items'),
+                          categoryName('Starters'),
+                          categoryName('Combos'),
+                          categoryName('Veg'),
+                          categoryName('Non-Veg'),
+                        ],
+                      )),
+                ),
+              ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -127,7 +154,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                         Container(
                           color: widget.snap['foodlist'][index]['AVAILABLE']
                               ? Colors.white
-                              : Colors.grey[400],
+                              : Colors.grey[350],
                           height: 190,
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
@@ -306,18 +333,22 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             decoration: BoxDecoration(
                                               border: Border.all(color: secondaryGreen, width: 2),
                                               borderRadius: BorderRadius.circular(10),
-                                              color: widget.snap['foodlist'][index]['AVAILABLE']
+                                              color: widget.snap['foodlist'][index]['AVAILABLE'] &&
+                                                      (widget.snap['open'])
                                                   ? lightGreen
                                                   : Colors.grey,
                                             ),
                                             child: InkWell(
                                               onTap: () {
-                                                if (widget.snap['foodlist'][index]['AVAILABLE']) {
+                                                if (widget.snap['foodlist'][index]['AVAILABLE'] &&
+                                                    (widget.snap['open'])) {
                                                   setState(() {
                                                     counter[index]++;
                                                     sum = counter.sum;
                                                     popUpAnimationController.forward();
                                                   });
+                                                } else if (!(widget.snap['open'])) {
+                                                  showSnackBar('Restaurant is closed!', context);
                                                 } else {
                                                   showSnackBar('Item unavailable!', context);
                                                 }
@@ -329,8 +360,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                       horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(3),
-                                                    color: widget.snap['foodlist'][index]
-                                                            ['AVAILABLE']
+                                                    color: (widget.snap['foodlist'][index]
+                                                                ['AVAILABLE'] &&
+                                                            (widget.snap['open']))
                                                         ? lightGreen
                                                         : Colors.grey,
                                                   ),
@@ -410,6 +442,37 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget categoryName(String category) {
+    bool isSelected = category == selectedCategory;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedCategory = category;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          color: isSelected ? parrotGreen : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: parrotGreen,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          category,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
@@ -599,14 +662,16 @@ class _BuildSheetState extends State<BuildSheet> {
                 decoration: BoxDecoration(
                   border: Border.all(color: secondaryGreen, width: 2),
                   borderRadius: BorderRadius.circular(10),
-                  color: widget.snap['foodlist'][widget.index]['AVAILABLE']
+                  color: widget.snap['foodlist'][widget.index]['AVAILABLE'] && widget.snap['open']
                       ? const Color.fromARGB(255, 6, 79, 53)
                       : Colors.grey,
                 ),
                 child: InkWell(
                   onTap: () {
-                    if (widget.snap['foodlist'][widget.index]['AVAILABLE']) {
+                    if (widget.snap['foodlist'][widget.index]['AVAILABLE'] && widget.snap['open']) {
                       Navigator.pop(context, counter);
+                    } else if (!(widget.snap['open'])) {
+                      showSnackBar('Restaurant is closed!', context);
                     } else {
                       showSnackBar('Item unavailable', context);
                     }
