@@ -96,6 +96,7 @@ class _OrderScreenState extends State<OrderScreen> {
         email: email,
         phone: phone,
         address: address,
+        resAddress: widget.snap['address'],
       );
 
       if (context.mounted) {

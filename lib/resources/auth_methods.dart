@@ -25,6 +25,7 @@ class AuthMethods {
           'email': email,
           'phone': '+91$phone',
           'password': password,
+          'address': "Add address",
         });
 
         res = "success";
@@ -214,6 +215,7 @@ class AuthMethods {
     required String phone,
     required String address,
     required String resUid,
+    required String resAddress,
   }) async {
     String res = 'Some error occured';
     try {
@@ -235,6 +237,9 @@ class AuthMethods {
         'address': address,
         'datePlaced': datePlaced,
         'orderId': uuid,
+        'assigned': false,
+        'resAddress': resAddress,
+        'requested': false,
       });
       res = 'success';
     } catch (e) {

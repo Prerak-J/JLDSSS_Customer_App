@@ -17,6 +17,8 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateMixin {
   String selectedCategory = "All items";
+  String selectedType = "All types";
+  Color? selectedColor = Colors.blue[900];
   List<int> counter = [];
   int sum = 0;
   late AnimationController popUpAnimationController = AnimationController(
@@ -120,22 +122,67 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      typeName('All types'),
+                      typeName('Veg'),
+                      typeName('Non-Veg'),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          categoryName('All items'),
-                          categoryName('Starters'),
-                          categoryName('Combos'),
-                          categoryName('Veg'),
-                          categoryName('Non-Veg'),
-                        ],
-                      )),
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        categoryName('All items'),
+                        categoryName('Starters'),
+                        categoryName('Combos'),
+                        categoryName('Main Course'),
+                        categoryName('Desserts'),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
+                    if (selectedCategory != 'All items' || selectedType != 'All types') {
+                      if (selectedType == 'All types') {
+                        if (widget.snap['foodlist'][index]['category'] != selectedCategory) {
+                          return Container();
+                        }
+                      }
+                      if (selectedType == 'Veg') {
+                        if (selectedCategory != 'All items') {
+                          if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
+                              widget.snap['foodlist'][index]['type'] != 'veg') {
+                            return Container();
+                          }
+                        } else {
+                          if (widget.snap['foodlist'][index]['type'] != 'veg') {
+                            return Container();
+                          }
+                        }
+                      }
+                      if (selectedType == 'Non-Veg') {
+                        if (selectedCategory != 'All items') {
+                          if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
+                              widget.snap['foodlist'][index]['type'] != 'non_veg') {
+                            return Container();
+                          }
+                        } else {
+                          if (widget.snap['foodlist'][index]['type'] != 'non_veg') {
+                            return Container();
+                          }
+                        }
+                      }
+                    }
                     return Column(
                       children: [
                         Container(
@@ -456,11 +503,11 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           color: isSelected ? parrotGreen : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: parrotGreen,
             width: 1,
@@ -468,6 +515,60 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
         ),
         child: Text(
           category,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget typeName(String type) {
+    bool isSelected = type == selectedType;
+    Color? borderColor = Colors.black;
+    switch (type) {
+      case 'Veg':
+        borderColor = Colors.green[900];
+        break;
+      case 'Non-Veg':
+        borderColor = darkRed;
+        break;
+      default:
+        borderColor = Colors.blue[900];
+        break;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedType = type;
+          switch (selectedType) {
+            case 'Veg':
+              selectedColor = Colors.green[900];
+              break;
+            case 'Non-Veg':
+              selectedColor = darkRed;
+              break;
+            default:
+              selectedColor = Colors.blue[900];
+              break;
+          }
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: borderColor ?? Colors.black,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          type,
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: FontWeight.bold,
