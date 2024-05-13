@@ -221,15 +221,45 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                             width: 110,
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(18),
-                                              child: Image.network(
-                                                'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
-                                                height: 120,
-                                                color: widget.snap['foodlist']
-                                                        [filteredIndices[index]]['AVAILABLE']
-                                                    ? null
-                                                    : Colors.grey,
-                                                colorBlendMode: BlendMode.hue,
-                                              ),
+                                              child: (widget.snap['foodlist']
+                                                                  [filteredIndices[index]]
+                                                              ['photoURL'] !=
+                                                          null &&
+                                                      widget.snap['foodlist']
+                                                                  [filteredIndices[index]]
+                                                              ['photoURL'] !=
+                                                          '')
+                                                  ? Image.network(
+                                                      widget.snap['foodlist']
+                                                          [filteredIndices[index]]['photoURL'],
+                                                      height: 120,
+                                                      fit: BoxFit.cover,
+                                                      cacheWidth:
+                                                          (MediaQuery.of(context).size.width *
+                                                                  MediaQuery.of(context)
+                                                                      .devicePixelRatio)
+                                                              .round(),
+                                                      color: widget.snap['foodlist']
+                                                              [filteredIndices[index]]['AVAILABLE']
+                                                          ? null
+                                                          : Colors.grey,
+                                                      colorBlendMode: BlendMode.hue,
+                                                    )
+                                                  : Image.network(
+                                                      'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
+                                                      height: 120,
+                                                      fit: BoxFit.cover,
+                                                      cacheWidth:
+                                                          (MediaQuery.of(context).size.width *
+                                                                  MediaQuery.of(context)
+                                                                      .devicePixelRatio)
+                                                              .round(),
+                                                      color: widget.snap['foodlist']
+                                                              [filteredIndices[index]]['AVAILABLE']
+                                                          ? null
+                                                          : Colors.grey,
+                                                      colorBlendMode: BlendMode.hue,
+                                                    ),
                                             ),
                                           ),
                                           const SizedBox(

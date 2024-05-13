@@ -25,7 +25,6 @@ class AuthMethods {
           'email': email,
           'phone': '+91$phone',
           'password': password,
-          'address': "Add address",
         });
 
         res = "success";
@@ -56,7 +55,7 @@ class AuthMethods {
         String? email = snapshot.get('email');
         String? phone = snapshot.get('phone');
         String? password = snapshot.get('password');
-        String? address = snapshot.get('address');
+        String? address = snapshot.data()!['address']??'Add Address';
         Map<String, dynamic> userData = {
           'name': name,
           'email': email,
@@ -216,6 +215,9 @@ class AuthMethods {
     required String address,
     required String resUid,
     required String resAddress,
+    required double gst,
+    required double deliveryFee,
+    required double platformFee,
   }) async {
     String res = 'Some error occured';
     try {
@@ -240,6 +242,9 @@ class AuthMethods {
         'assigned': false,
         'resAddress': resAddress,
         'requested': false,
+        'gst': gst,
+        'platformFee': platformFee,
+        'deliveryFee': deliveryFee,
       });
       res = 'success';
     } catch (e) {

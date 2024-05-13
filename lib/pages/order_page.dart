@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:customer_app/pages/address_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/screens/map_screen.dart';
 import 'package:customer_app/utils/colors.dart';
@@ -29,6 +31,9 @@ class _OrderScreenState extends State<OrderScreen> {
   double sum = 0.00;
   double grdTotal = 0.00;
   double toPay = 0.00;
+  double gst = 0.00;
+  double deliveryFee = 0.00;
+  double platformFee = 0.00;
   var _userData = {};
   String name = '';
   String email = '';
@@ -50,8 +55,6 @@ class _OrderScreenState extends State<OrderScreen> {
     for (int i = 0; i < values.length; i++) {
       sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
     }
-    grdTotal = sum + ((12 * sum) / 100) + 21.00 + 3.00;
-    toPay = grdTotal - 60.00;
     _isLoading = false;
     fetch();
   }
@@ -63,16 +66,27 @@ class _OrderScreenState extends State<OrderScreen> {
     _userData = (await AuthMethods().getUserData(
       FirebaseAuth.instance.currentUser!.uid,
     ))!;
+    var pricesSnap =
+        await FirebaseFirestore.instance.collection('prices').doc('prices@admin').get();
     setState(() {
       _isLoading = false;
       name = _userData['name'];
       email = _userData['email'];
       phone = _userData['phone'];
-      address = _userData['address'];
+      address = _userData['address'] ?? 'Add Address';
+      gst = pricesSnap.data()!['gst'].toDouble();
+      deliveryFee = pricesSnap.data()!['partnerFee'].toDouble();
+      platformFee = pricesSnap.data()!['platformFee'].toDouble();
+      grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
+      toPay = grdTotal - 60.00;
     });
   }
 
   void placeOrder() async {
+    if (_userData['address'] == null) {
+      showSnackBar('Please add an address', context);
+      return;
+    }
     if (values.sum > 0) {
       setState(() {
         _isLoading = true;
@@ -97,6 +111,9 @@ class _OrderScreenState extends State<OrderScreen> {
         phone: phone,
         address: address,
         resAddress: widget.snap['address'],
+        gst: gst,
+        deliveryFee: deliveryFee,
+        platformFee: platformFee,
       );
 
       if (context.mounted) {
@@ -130,9 +147,11 @@ class _OrderScreenState extends State<OrderScreen> {
             child: CircularProgressIndicator(),
           )
         : Scaffold(
+            backgroundColor: Colors.grey[350],
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  backgroundColor: Colors.grey[350],
                   floating: true,
                   leadingWidth: 35,
                   title: Text(
@@ -386,53 +405,78 @@ class _OrderScreenState extends State<OrderScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Card(
-                        elevation: 4,
-                        margin: const EdgeInsets.all(0),
-                        color: lightGrey,
-                        surfaceTintColor: lightGrey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                name,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddressScreen(),
+                          ),
+                        ).then((value) => fetch()),
+                        child: Card(
+                          elevation: 4,
+                          margin: const EdgeInsets.all(0),
+                          color: lightGrey,
+                          surfaceTintColor: lightGrey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        email,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Color.fromARGB(255, 31, 129, 34),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      Text(
+                                        phone,
+                                        style: const TextStyle(
+                                          fontSize: 13.5,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      Text(
+                                        address,
+                                        style: TextStyle(
+                                          fontSize: 13.5,
+                                          color: address == 'Add Address'
+                                              ? Colors.tealAccent
+                                              : Colors.black54,
+                                          fontWeight: address == 'Add Address'
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                email,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color.fromARGB(255, 31, 129, 34),
+                                const Icon(
+                                  Icons.keyboard_arrow_right_rounded,
+                                  size: 22,
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                phone,
-                                style: const TextStyle(
-                                  fontSize: 13.5,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                address,
-                                style: const TextStyle(
-                                  fontSize: 13.5,
-                                  color: Colors.black54,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -545,14 +589,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    'GST and restaurant charges',
+                                    'GST',
                                     style: TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   Text(
-                                    '₹${((12 * sum) / 100).toStringAsFixed(2)}',
+                                    '₹${((gst * sum) / 100).toStringAsFixed(2)}',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w500,
@@ -574,7 +618,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹21.0',
+                                    '₹ $deliveryFee',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w500,
@@ -596,7 +640,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹3.0',
+                                    '₹ $platformFee',
                                     style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w600,
@@ -672,6 +716,9 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(
+                      height: 12,
                     ),
                   ]),
                 ),

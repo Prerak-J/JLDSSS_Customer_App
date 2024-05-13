@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/address_page.dart';
 import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/pages/settings_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
@@ -181,6 +182,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: Column(
                       children: [
+                        ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          tileColor: lightGrey,
+                          leading: const Icon(
+                            Icons.home_work_rounded,
+                            color: Color.fromARGB(255, 31, 129, 34),
+                          ),
+                          title: const Text(
+                            'Manage Addresses',
+                          ),
+                          trailing: const Icon(Icons.keyboard_arrow_right),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddressScreen(),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          width: double.infinity,
+                          height: 0.5,
+                          color: const Color.fromARGB(255, 196, 196, 196),
+                        ),
                         ListTile(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

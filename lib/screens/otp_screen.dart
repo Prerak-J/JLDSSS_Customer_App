@@ -1,5 +1,5 @@
+import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/login_page.dart';
-import 'package:customer_app/pages/settings_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
@@ -82,11 +82,9 @@ class _OtpScreenState extends State<OtpScreen> {
         showSnackBar(res, context);
       } else if (context.mounted) {
         showSnackBar('Profile updated', context);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const SettingsScreen(),
-          ),
-        );
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const HomeScreen()));
       }
     }
   }
