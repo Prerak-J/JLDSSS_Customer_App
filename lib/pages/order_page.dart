@@ -39,6 +39,8 @@ class _OrderScreenState extends State<OrderScreen> {
   String email = '';
   String phone = '';
   String address = '';
+  double latitude = 0.0;
+  double longitude = 0.0;
   bool _isLoading = false;
 
   @override
@@ -64,8 +66,13 @@ class _OrderScreenState extends State<OrderScreen> {
       _isLoading = true;
     });
     _userData = (await AuthMethods().getUserData(
-      FirebaseAuth.instance.currentUser!.uid,
-    ))!;
+          FirebaseAuth.instance.currentUser!.uid,
+        )) ??
+        {};
+    if (_userData.isEmpty && context.mounted) {
+      showSnackBar("Some error occured", context);
+      Navigator.pop(context);
+    }
     var pricesSnap =
         await FirebaseFirestore.instance.collection('prices').doc('prices@admin').get();
     setState(() {
@@ -74,6 +81,13 @@ class _OrderScreenState extends State<OrderScreen> {
       email = _userData['email'];
       phone = _userData['phone'];
       address = _userData['address'] ?? 'Add Address';
+
+      if (_userData['addressList'] != null && _userData['addressList'].length > 0) {
+        latitude = _userData['addressList'][_userData['defaultAddress']]['latitude'] ?? 0.0;
+        longitude = _userData['addressList'][_userData['defaultAddress']]['longitude'] ?? 0.0;
+        // print("CHECK ME: $latitude");
+        // print("CHECK ME: $longitude");
+      }
       gst = pricesSnap.data()!['gst'].toDouble();
       deliveryFee = pricesSnap.data()!['partnerFee'].toDouble();
       platformFee = pricesSnap.data()!['platformFee'].toDouble();
@@ -83,7 +97,7 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   void placeOrder() async {
-    if (_userData['address'] == null) {
+    if (_userData['address'] == "Add Address") {
       showSnackBar('Please add an address', context);
       return;
     }
@@ -114,10 +128,13 @@ class _OrderScreenState extends State<OrderScreen> {
         gst: gst,
         deliveryFee: deliveryFee,
         platformFee: platformFee,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       if (context.mounted) {
         if (res == 'success') {
+          // showSnackBar('Order Placed but Working on Map !', context);
           showSnackBar('Order Placed !', context);
           Navigator.pushAndRemoveUntil(
             context,
@@ -143,9 +160,11 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     final menuWidth = MediaQuery.of(context).size.width * 0.955;
     return _isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? const Scaffold(
+          body: Center(
+              child: CircularProgressIndicator(),
+            ),
+        )
         : Scaffold(
             backgroundColor: Colors.grey[350],
             body: CustomScrollView(
@@ -263,11 +282,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                               (widget.snap['foodlist'][indice[i]]
                                                                   ['PRICE']);
                                                         }
-                                                        toPay = sum +
-                                                            ((12 * sum) / 100) +
-                                                            21.00 +
-                                                            3.00 -
-                                                            60.00;
+                                                        grdTotal = sum +
+                                                            ((gst * sum) / 100) +
+                                                            deliveryFee +
+                                                            platformFee;
+                                                        toPay = grdTotal - 60.00;
                                                       });
                                                     } else if (values.sum <= 1) {
                                                       Navigator.pop(context);
@@ -306,11 +325,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                             (widget.snap['foodlist'][indice[i]]
                                                                 ['PRICE']);
                                                       }
-                                                      toPay = sum +
-                                                          ((12 * sum) / 100) +
-                                                          21.00 +
-                                                          3.00 -
-                                                          60.00;
+                                                      grdTotal = sum +
+                                                          ((gst * sum) / 100) +
+                                                          deliveryFee +
+                                                          platformFee;
+                                                      toPay = grdTotal - 60.00;
                                                     });
                                                   },
                                                   child: const Icon(
@@ -343,11 +362,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         (widget.snap['foodlist'][indice[i]]
                                                             ['PRICE']);
                                                   }
-                                                  toPay = sum +
-                                                      ((12 * sum) / 100) +
-                                                      21.00 +
-                                                      3.00 -
-                                                      60.00;
+                                                  grdTotal = sum +
+                                                      ((gst * sum) / 100) +
+                                                      deliveryFee +
+                                                      platformFee;
+                                                  toPay = grdTotal - 60.00;
                                                 });
                                               },
                                               child: Center(
@@ -737,7 +756,11 @@ class _OrderScreenState extends State<OrderScreen> {
                   color: const Color.fromARGB(255, 4, 68, 46),
                 ),
                 child: InkWell(
-                  onTap: placeOrder, //PLACING ORDER
+                  onTap: () {
+                    ((_userData['activeOrder'] == null) || !_userData['activeOrder'])
+                        ? placeOrder()
+                        : showSnackBar("You already have an active order!", context);
+                  }, //PLACING ORDER
                   child: Row(
                     children: [
                       Padding(

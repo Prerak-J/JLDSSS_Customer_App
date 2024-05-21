@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer_app/pages/add_address_page.dart';
 import 'package:customer_app/pages/edit_address_page.dart';
 import 'package:customer_app/resources/address_methods.dart';
 import 'package:customer_app/utils/colors.dart';
@@ -14,9 +15,6 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  final TextEditingController _labelController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _landmarkController = TextEditingController();
   bool _isLoading = false;
 
   showAlertDialog(int index) {
@@ -57,33 +55,6 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
-  void addAddress(String label, String address, String landmark) async {
-    setState(() {
-      _isLoading = true;
-    });
-    String res = await AddressMethods().addNewAddress(
-      FirebaseAuth.instance.currentUser!.uid,
-      {
-        'label': label,
-        'address': address,
-        'landmark': landmark,
-      },
-    );
-    if (context.mounted) {
-      if (res != "success") {
-        showSnackBar(res, context);
-      } else {
-        showSnackBar('Address added', context);
-      }
-    }
-    setState(() {
-      _labelController.clear();
-      _addressController.clear();
-      _landmarkController.clear();
-      _isLoading = false;
-    });
-  }
-
   void deleteAddress(int index) async {
     Navigator.pop(context);
     setState(() {
@@ -101,14 +72,6 @@ class _AddressScreenState extends State<AddressScreen> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _labelController.dispose();
-    _addressController.dispose();
-    _landmarkController.dispose();
   }
 
   @override
@@ -145,53 +108,14 @@ class _AddressScreenState extends State<AddressScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        TextFormField(
-                          validator: (value) => value!.trim().isEmpty ? '*Required' : null,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          keyboardType: TextInputType.text,
-                          controller: _labelController,
-                          decoration: const InputDecoration(
-                            labelText: 'Label*',
-                            hintText: "Example: 'Home', 'Work', 'College' etc...",
-                            hintStyle: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          validator: (value) => value!.trim().isEmpty ? '*Required' : null,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          controller: _addressController,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: 'Address*',
-                            hintText: 'Enter your full address',
-                            hintStyle: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: _landmarkController,
-                          decoration: const InputDecoration(
-                            labelText: 'Landmark (Optional)',
-                            hintText:
-                                'Example: Near Hotel Plaza, Behind Little Flowers School, etc...',
-                            hintStyle: TextStyle(fontSize: 12),
-                          ),
-                        ),
                         const SizedBox(height: 40),
                         InkWell(
-                          onTap: () {
-                            if (_labelController.text.isNotEmpty &&
-                                _addressController.text.isNotEmpty) {
-                              addAddress(
-                                _labelController.text,
-                                _addressController.text,
-                                _landmarkController.text,
-                              );
-                            } else {
-                              showSnackBar('Please fill the Required(*) fields', context);
-                            }
-                          },
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddAddressScreen(),
+                            ),
+                          ),
                           child: Align(
                             alignment: Alignment.center,
                             child: Material(

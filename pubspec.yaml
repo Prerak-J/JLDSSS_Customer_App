@@ -38,10 +38,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.3.8
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
   intl: ^0.19.0
   uuid: ^4.3.3
-  google_maps_flutter: ^2.5.3
-  geolocator: ^11.0.0
+  widget_to_marker: ^1.0.4
 
 dev_dependencies:
   flutter_lints: ^2.0.0

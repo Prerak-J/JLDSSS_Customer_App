@@ -51,21 +51,21 @@ class AuthMethods {
 
       if (snapshot.exists) {
         // Get username and email directly from the DocumentSnapshot
-        String? name = snapshot.get('name');
-        String? email = snapshot.get('email');
-        String? phone = snapshot.get('phone');
-        String? password = snapshot.get('password');
-        String? address = snapshot.data()!['address']??'Add Address';
-        Map<String, dynamic> userData = {
-          'name': name,
-          'email': email,
-          'phone': phone,
-          'password': password,
-          'address': address,
-        };
+        // String? name = snapshot.get('name');
+        // String? email = snapshot.get('email');
+        // String? phone = snapshot.get('phone');
+        // String? password = snapshot.get('password');
+        // String? address = snapshot.data()!['address'] ?? 'Add Address';
+        // List<Map<String, dynamic>> addressList = [{}];
+        // if (snapshot.data()!['addressList'] != null) {
+        //   addressList = List<Map<String, dynamic>>.from(snapshot.data()!['addressList']);
+        // }
+        // print(addressList);
+        Map<String, dynamic> userData = snapshot.data()!;
         return userData;
       } else {
-        return null; // Document does not exist
+        return null; 
+        // Document does not exist
       }
     } catch (error) {
       print('Getting error during fetching data: $error');
@@ -218,6 +218,8 @@ class AuthMethods {
     required double gst,
     required double deliveryFee,
     required double platformFee,
+    required double latitude,
+    required double longitude,
   }) async {
     String res = 'Some error occured';
     try {
@@ -245,7 +247,14 @@ class AuthMethods {
         'gst': gst,
         'platformFee': platformFee,
         'deliveryFee': deliveryFee,
+        'status': 'active',
+        'lat': latitude,
+        'lng': longitude,
       });
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .update({'activeOrder': true});
       res = 'success';
     } catch (e) {
       res = e.toString();

@@ -89,6 +89,8 @@ class AddressMethods {
           List<dynamic> addresses = List<dynamic>.from(data['addressList']);
           if (indexToRemove == data['defaultAddress']) {
             docRef.update({'defaultAddress': null, 'address': null});
+          } else if (indexToRemove < data['defaultAddress']) {
+            docRef.update({'defaultAddress': data['defaultAddress'] - 1});
           }
           if (indexToRemove >= 0 && indexToRemove < addresses.length) {
             addresses.removeAt(indexToRemove);
