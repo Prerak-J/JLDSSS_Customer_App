@@ -32,6 +32,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Future<void> _setCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied && context.mounted) {
+        Navigator.pop(context);
+        showSnackBar("Location permission was denied", context);
+      }
+    }
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _currentPosition = position;
