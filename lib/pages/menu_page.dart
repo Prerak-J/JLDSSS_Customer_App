@@ -21,6 +21,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   Color? selectedColor = Colors.blue[900];
   List<int> counter = [];
   int sum = 0;
+  int noOfItems = 0;
   late AnimationController popUpAnimationController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 800),
@@ -29,7 +30,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    counter = List.filled(widget.snap['foodlist'].length, 0);
+    counter = List.filled(widget.snap['foodlist'] != null ? widget.snap['foodlist'].length : 0, 0);
     sum = 0;
     popUpAnimationController = AnimationController(
       vsync: this,
@@ -149,315 +150,428 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (selectedCategory != 'All items' || selectedType != 'All types') {
-                      if (selectedType == 'All types') {
-                        if (widget.snap['foodlist'][index]['category'] != selectedCategory) {
-                          return Container();
-                        }
-                      }
-                      if (selectedType == 'Veg') {
-                        if (selectedCategory != 'All items') {
-                          if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
-                              widget.snap['foodlist'][index]['type'] != 'veg') {
-                            return Container();
-                          }
-                        } else {
-                          if (widget.snap['foodlist'][index]['type'] != 'veg') {
-                            return Container();
-                          }
-                        }
-                      }
-                      if (selectedType == 'Non-Veg') {
-                        if (selectedCategory != 'All items') {
-                          if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
-                              widget.snap['foodlist'][index]['type'] != 'non_veg') {
-                            return Container();
-                          }
-                        } else {
-                          if (widget.snap['foodlist'][index]['type'] != 'non_veg') {
-                            return Container();
-                          }
-                        }
-                      }
-                    }
-                    return Column(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.95,
-                          height: 0.5,
-                          decoration: const BoxDecoration(
-                            color: Colors.grey,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 1,
-                              )
-                            ],
-                          ),
+              counter.isEmpty
+                  ? const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 100),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.no_food_rounded,
+                              size: 40,
+                            ),
+                            Text('No items currently')
+                          ],
                         ),
-                        Container(
-                          color: widget.snap['foodlist'][index]['AVAILABLE']
-                              ? Colors.white
-                              : Colors.grey[350],
-                          height: 190,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () => showModalBottomSheet(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(30),
-                                    ),
-                                  ),
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (context) => BuildSheet(
-                                    snap: widget.snap,
-                                    index: index,
-                                    menuwidth: menuWidth,
-                                  ),
-                                ).then((value) {
-                                  if (value > 0) {
-                                    setState(() {
-                                      counter[index] = value;
-                                      sum = counter.sum;
-                                      popUpAnimationController.forward();
-                                    });
-                                  }
-                                }),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                                  alignment: Alignment.topLeft,
-                                  // color: lightGreen,
-                                  width: menuWidth * 0.63,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Align(
-                                        alignment: const Alignment(-1.02, -1),
-                                        child: widget.snap['foodlist'][index]['type'] == 'veg'
-                                            ? const Icon(
-                                                CupertinoIcons.dot_square,
-                                                color: Color(0xff14801b),
-                                                size: 18,
-                                              )
-                                            : const Icon(
-                                                CupertinoIcons.arrowtriangle_up_square,
-                                                color: Color(0xff8a4528),
-                                                size: 18,
-                                              ),
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      Text(
-                                        widget.snap['foodlist'][index]['NAME'],
-                                        style: const TextStyle(
-                                            fontSize: 16, fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        '₹${widget.snap['foodlist'][index]['PRICE'].toString()}',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: parrotGreen,
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          if (selectedCategory != 'All items' || selectedType != 'All types') {
+                            if (selectedType == 'All types') {
+                              if (widget.snap['foodlist'][index]['category'] != selectedCategory) {
+                                noOfItems++;
+                                if (index == counter.length - 1 && noOfItems == counter.length) {
+                                  return const Padding(
+                                    padding: EdgeInsets.only(top: 100),
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.no_food_rounded,
+                                          size: 40,
                                         ),
+                                        Text('No such items currently')
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              }
+                            }
+                            if (selectedType == 'Veg') {
+                              if (selectedCategory != 'All items') {
+                                if (widget.snap['foodlist'][index]['category'] !=
+                                        selectedCategory ||
+                                    widget.snap['foodlist'][index]['type'] != 'veg') {
+                                  noOfItems++;
+                                  if (index == counter.length - 1 && noOfItems == counter.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(top: 100),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.no_food_rounded,
+                                            size: 40,
+                                          ),
+                                          Text('No such items currently')
+                                        ],
                                       ),
-                                      Text(
-                                        widget.snap['foodlist'][index]['DESCRIPTION'],
-                                        style: const TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.w400),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }
+                              } else {
+                                if (widget.snap['foodlist'][index]['type'] != 'veg') {
+                                  noOfItems++;
+                                  if (index == counter.length - 1 && noOfItems == counter.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(top: 100),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.no_food_rounded,
+                                            size: 40,
+                                          ),
+                                          Text('No such items currently')
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }
+                              }
+                            }
+                            if (selectedType == 'Non-Veg') {
+                              if (selectedCategory != 'All items') {
+                                if (widget.snap['foodlist'][index]['category'] !=
+                                        selectedCategory ||
+                                    widget.snap['foodlist'][index]['type'] != 'non_veg') {
+                                  noOfItems++;
+                                  if (index == counter.length - 1 && noOfItems == counter.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(top: 100),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.no_food_rounded,
+                                            size: 40,
+                                          ),
+                                          Text('No such items currently')
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }
+                              } else {
+                                if (widget.snap['foodlist'][index]['type'] != 'non_veg') {
+                                  noOfItems++;
+                                  if (index == counter.length - 1 && noOfItems == counter.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.only(top: 100),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.no_food_rounded,
+                                            size: 40,
+                                          ),
+                                          Text('No such items currently')
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          return Column(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                height: 0.5,
+                                decoration: const BoxDecoration(
+                                  color: Colors.grey,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 1,
+                                    )
+                                  ],
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                // color: Colors.green,
-                                width: menuWidth * 0.37,
-                                alignment: Alignment.topCenter,
-                                child: Column(
-                                  // alignment: const Alignment(0, 1.5),
+                                color: widget.snap['foodlist'][index]['AVAILABLE']
+                                    ? Colors.white
+                                    : Colors.grey[350],
+                                height: 190,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 8,
+                                ),
+                                child: Row(
                                   children: [
-                                    SizedBox(
-                                      height: 110,
-                                      width: 110,
-                                      child: ClipRRect(
-                                        clipBehavior: Clip.hardEdge,
-                                        borderRadius: BorderRadius.circular(18),
-                                        child: (widget.snap['foodlist'][index]['photoURL'] !=
-                                                    null &&
-                                                widget.snap['foodlist'][index]['photoURL'] != '')
-                                            ? Image.network(
-                                                widget.snap['foodlist'][index]['photoURL'],
-                                                height: 120,
-                                                fit: BoxFit.cover,
-                                                cacheWidth: (MediaQuery.of(context).size.width *
-                                                        MediaQuery.of(context).devicePixelRatio)
-                                                    .round(),
-                                                color: widget.snap['foodlist']
-                                                        [index]['AVAILABLE']
-                                                    ? null
-                                                    : Colors.grey,
-                                                colorBlendMode: BlendMode.hue,
-                                              )
-                                            : Image.network(
-                                                'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
-                                                height: 120,
-                                                fit: BoxFit.cover,
-                                                cacheWidth: (MediaQuery.of(context).size.width *
-                                                        MediaQuery.of(context).devicePixelRatio)
-                                                    .round(),
-                                                color: widget.snap['foodlist']
-                                                        [index]['AVAILABLE']
-                                                    ? null
-                                                    : Colors.grey,
-                                                colorBlendMode: BlendMode.hue,
+                                    InkWell(
+                                      onTap: () => showModalBottomSheet(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(30),
+                                          ),
+                                        ),
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (context) => BuildSheet(
+                                          snap: widget.snap,
+                                          index: index,
+                                          menuwidth: menuWidth,
+                                        ),
+                                      ).then((value) {
+                                        if (value > 0) {
+                                          setState(() {
+                                            counter[index] = value;
+                                            sum = counter.sum;
+                                            popUpAnimationController.forward();
+                                          });
+                                        }
+                                      }),
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                        alignment: Alignment.topLeft,
+                                        // color: lightGreen,
+                                        width: menuWidth * 0.63,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Align(
+                                              alignment: const Alignment(-1.02, -1),
+                                              child: widget.snap['foodlist'][index]['type'] == 'veg'
+                                                  ? const Icon(
+                                                      CupertinoIcons.dot_square,
+                                                      color: Color(0xff14801b),
+                                                      size: 18,
+                                                    )
+                                                  : const Icon(
+                                                      CupertinoIcons.arrowtriangle_up_square,
+                                                      color: Color(0xff8a4528),
+                                                      size: 18,
+                                                    ),
+                                            ),
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            Text(
+                                              widget.snap['foodlist'][index]['NAME'],
+                                              style: const TextStyle(
+                                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                            ),
+                                            Text(
+                                              '₹${widget.snap['foodlist'][index]['PRICE'].toString()}',
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                                color: parrotGreen,
                                               ),
+                                            ),
+                                            Text(
+                                              widget.snap['foodlist'][index]['DESCRIPTION'],
+                                              style: const TextStyle(
+                                                  fontSize: 12, fontWeight: FontWeight.w400),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 6,
-                                    ),
-                                    counter[index] > 0
-                                        ? Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth: menuWidth * 0.28,
-                                            ),
-                                            padding: const EdgeInsets.all(2),
-                                            // width: menuWidth * 0.16,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: secondaryGreen, width: 2),
-                                              borderRadius: BorderRadius.circular(10),
-                                              color: Theme.of(context).primaryColor,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () => counter[index] > 0
-                                                      ? setState(() {
-                                                          counter[index]--;
-                                                          sum = counter.sum;
-                                                          if (sum == 0) {
-                                                            popUpAnimationController.reverse();
-                                                          }
-                                                        })
-                                                      : {},
-                                                  child: const Icon(
-                                                    Icons.remove,
-                                                    color: Colors.white,
-                                                    size: 16,
-                                                  ),
-                                                ),
-                                                Flexible(child: Container()),
-                                                Container(
-                                                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                                                  padding: const EdgeInsets.symmetric(
-                                                      horizontal: 3, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(3),
-                                                      color: Theme.of(context).primaryColor),
-                                                  child: Text(
-                                                    counter[index] == 0
-                                                        ? 'ADD'
-                                                        : '${counter[index]}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 16,
+                                    Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      // color: Colors.green,
+                                      width: menuWidth * 0.37,
+                                      alignment: Alignment.topCenter,
+                                      child: Column(
+                                        // alignment: const Alignment(0, 1.5),
+                                        children: [
+                                          SizedBox(
+                                            height: 110,
+                                            width: 110,
+                                            child: ClipRRect(
+                                              clipBehavior: Clip.hardEdge,
+                                              borderRadius: BorderRadius.circular(18),
+                                              child: (widget.snap['foodlist'][index]['photoURL'] !=
+                                                          null &&
+                                                      widget.snap['foodlist'][index]['photoURL'] !=
+                                                          '')
+                                                  ? Image.network(
+                                                      widget.snap['foodlist'][index]['photoURL'],
+                                                      height: 120,
+                                                      fit: BoxFit.cover,
+                                                      cacheWidth:
+                                                          (MediaQuery.of(context).size.width *
+                                                                  MediaQuery.of(context)
+                                                                      .devicePixelRatio)
+                                                              .round(),
+                                                      color: widget.snap['foodlist'][index]
+                                                              ['AVAILABLE']
+                                                          ? null
+                                                          : Colors.grey,
+                                                      colorBlendMode: BlendMode.hue,
+                                                    )
+                                                  : Image.network(
+                                                      'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
+                                                      height: 120,
+                                                      fit: BoxFit.cover,
+                                                      cacheWidth:
+                                                          (MediaQuery.of(context).size.width *
+                                                                  MediaQuery.of(context)
+                                                                      .devicePixelRatio)
+                                                              .round(),
+                                                      color: widget.snap['foodlist'][index]
+                                                              ['AVAILABLE']
+                                                          ? null
+                                                          : Colors.grey,
+                                                      colorBlendMode: BlendMode.hue,
                                                     ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 6,
+                                          ),
+                                          counter[index] > 0
+                                              ? Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth: menuWidth * 0.28,
                                                   ),
-                                                ),
-                                                Flexible(child: Container()),
-                                                InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      counter[index]++;
-                                                      sum = counter.sum;
-                                                      popUpAnimationController.forward();
-                                                    });
-                                                  },
-                                                  child: const Icon(
-                                                    Icons.add,
-                                                    color: Colors.white,
-                                                    size: 16,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth: menuWidth * 0.28,
-                                            ),
-                                            padding: const EdgeInsets.all(2),
-                                            // width: menuWidth * 0.16,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: secondaryGreen, width: 2),
-                                              borderRadius: BorderRadius.circular(10),
-                                              color: widget.snap['foodlist'][index]['AVAILABLE'] &&
-                                                      (widget.snap['open'])
-                                                  ? lightGreen
-                                                  : Colors.grey,
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                if (widget.snap['foodlist'][index]['AVAILABLE'] &&
-                                                    (widget.snap['open'])) {
-                                                  setState(() {
-                                                    counter[index]++;
-                                                    sum = counter.sum;
-                                                    popUpAnimationController.forward();
-                                                  });
-                                                } else if (!(widget.snap['open'])) {
-                                                  showSnackBar('Restaurant is closed!', context);
-                                                } else {
-                                                  showSnackBar('Item unavailable!', context);
-                                                }
-                                              },
-                                              child: Center(
-                                                child: Container(
-                                                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                                                  padding: const EdgeInsets.symmetric(
-                                                      horizontal: 3, vertical: 2),
+                                                  padding: const EdgeInsets.all(2),
+                                                  // width: menuWidth * 0.16,
                                                   decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(3),
-                                                    color: (widget.snap['foodlist'][index]
+                                                    border:
+                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: Theme.of(context).primaryColor,
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      InkWell(
+                                                        onTap: () => counter[index] > 0
+                                                            ? setState(() {
+                                                                counter[index]--;
+                                                                sum = counter.sum;
+                                                                if (sum == 0) {
+                                                                  popUpAnimationController
+                                                                      .reverse();
+                                                                }
+                                                              })
+                                                            : {},
+                                                        child: const Icon(
+                                                          Icons.remove,
+                                                          color: Colors.white,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                      Flexible(child: Container()),
+                                                      Container(
+                                                        margin: const EdgeInsets.symmetric(
+                                                            horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(
+                                                            horizontal: 3, vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(3),
+                                                            color: Theme.of(context).primaryColor),
+                                                        child: Text(
+                                                          counter[index] == 0
+                                                              ? 'ADD'
+                                                              : '${counter[index]}',
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Flexible(child: Container()),
+                                                      InkWell(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            counter[index]++;
+                                                            sum = counter.sum;
+                                                            popUpAnimationController.forward();
+                                                          });
+                                                        },
+                                                        child: const Icon(
+                                                          Icons.add,
+                                                          color: Colors.white,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth: menuWidth * 0.28,
+                                                  ),
+                                                  padding: const EdgeInsets.all(2),
+                                                  // width: menuWidth * 0.16,
+                                                  decoration: BoxDecoration(
+                                                    border:
+                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: widget.snap['foodlist'][index]
                                                                 ['AVAILABLE'] &&
-                                                            (widget.snap['open']))
+                                                            (widget.snap['open'])
                                                         ? lightGreen
                                                         : Colors.grey,
                                                   ),
-                                                  child: const Text(
-                                                    'ADD +',
-                                                    style: TextStyle(
-                                                        color: secondaryGreen,
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.w600),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      if (widget.snap['foodlist'][index]
+                                                              ['AVAILABLE'] &&
+                                                          (widget.snap['open'])) {
+                                                        setState(() {
+                                                          counter[index]++;
+                                                          sum = counter.sum;
+                                                          popUpAnimationController.forward();
+                                                        });
+                                                      } else if (!(widget.snap['open'])) {
+                                                        showSnackBar(
+                                                            'Restaurant is closed!', context);
+                                                      } else {
+                                                        showSnackBar('Item unavailable!', context);
+                                                      }
+                                                    },
+                                                    child: Center(
+                                                      child: Container(
+                                                        margin: const EdgeInsets.symmetric(
+                                                            horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(
+                                                            horizontal: 3, vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(3),
+                                                          color: (widget.snap['foodlist'][index]
+                                                                      ['AVAILABLE'] &&
+                                                                  (widget.snap['open']))
+                                                              ? lightGreen
+                                                              : Colors.grey,
+                                                        ),
+                                                        child: const Text(
+                                                          'ADD +',
+                                                          style: TextStyle(
+                                                              color: secondaryGreen,
+                                                              fontSize: 16,
+                                                              fontWeight: FontWeight.w600),
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  childCount: widget.snap['foodlist'].length,
-                ),
-              ),
+                          );
+                        },
+                        childCount:
+                            widget.snap['foodlist'] != null ? widget.snap['foodlist'].length : 0,
+                      ),
+                    ),
               SliverToBoxAdapter(
                 child: Container(
                   height: 80,
@@ -522,6 +636,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
       onTap: () {
         setState(() {
           selectedCategory = category;
+          noOfItems = 0;
         });
       },
       child: Container(
@@ -564,6 +679,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
     return GestureDetector(
       onTap: () {
         setState(() {
+          noOfItems = 0;
           selectedType = type;
           switch (selectedType) {
             case 'Veg':

@@ -97,7 +97,7 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   void placeOrder() async {
-    if (_userData['address'] == "Add Address") {
+    if (_userData['address'] == "Add Address" || _userData['address'] == null) {
       showSnackBar('Please add an address', context);
       return;
     }
@@ -161,10 +161,10 @@ class _OrderScreenState extends State<OrderScreen> {
     final menuWidth = MediaQuery.of(context).size.width * 0.955;
     return _isLoading
         ? const Scaffold(
-          body: Center(
+            body: Center(
               child: CircularProgressIndicator(),
             ),
-        )
+          )
         : Scaffold(
             backgroundColor: Colors.grey[350],
             body: CustomScrollView(
@@ -430,7 +430,9 @@ class _OrderScreenState extends State<OrderScreen> {
                           MaterialPageRoute(
                             builder: (context) => const AddressScreen(),
                           ),
-                        ).then((value) => fetch()),
+                        ).then((value) {
+                          fetch();
+                        }),
                         child: Card(
                           elevation: 4,
                           margin: const EdgeInsets.all(0),
@@ -479,7 +481,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         style: TextStyle(
                                           fontSize: 13.5,
                                           color: address == 'Add Address'
-                                              ? Colors.tealAccent
+                                              ? Colors.teal
                                               : Colors.black54,
                                           fontWeight: address == 'Add Address'
                                               ? FontWeight.bold

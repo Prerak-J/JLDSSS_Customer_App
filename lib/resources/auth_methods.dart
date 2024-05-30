@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
@@ -17,14 +19,27 @@ class AuthMethods {
     try {
       if (name.isNotEmpty && email.isNotEmpty && phone.isNotEmpty && password.isNotEmpty) {
         //REGISTER USER
-        UserCredential cred =
-            await _auth.createUserWithEmailAndPassword(email: email, password: password);
+        UserCredential? cred;
+        try {
+          cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'email-already-in-use') {
+            try {
+              cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
+            } on FirebaseAuthException catch (e) {
+              return e.message ?? e.code;
+            }
+          } else {
+            return e.message ?? e.toString();
+          }
+        }
 
         await _firestore.collection('users').doc(cred.user!.uid).set({
           'name': name,
           'email': email,
           'phone': '+91$phone',
           'password': password,
+          'addressList': [],
         });
 
         res = "success";
@@ -222,6 +237,8 @@ class AuthMethods {
     required double longitude,
   }) async {
     String res = 'Some error occured';
+    Random rnd = Random();
+    int otp = rnd.nextInt(900000) + 100000;
     try {
       User? curr = _auth.currentUser!;
       String? uuid = const Uuid().v4();
@@ -247,9 +264,12 @@ class AuthMethods {
         'gst': gst,
         'platformFee': platformFee,
         'deliveryFee': deliveryFee,
-        'status': 'active',
+        'active': true,
+        'displayStatus': 'Order Placed',
         'lat': latitude,
         'lng': longitude,
+        'OTP': otp.toString(),
+        'confirmPickup': false,
       });
       await _firestore
           .collection('users')

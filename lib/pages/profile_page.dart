@@ -127,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         offset: Offset(4, 4),
                       ),
                     ],
-                    color: Color.fromARGB(255, 220, 220, 220),
+                    color: lightGrey,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

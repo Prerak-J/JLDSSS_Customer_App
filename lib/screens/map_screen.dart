@@ -24,11 +24,15 @@ class _MapScreenState extends State<MapScreen> {
   final CollectionReference _partnerCollection = FirebaseFirestore.instance.collection('partners');
   LatLng _destination = const LatLng(37.77483, -122.41942); // Example destination
   LatLng _currentPosition = const LatLng(0.0, 0.0);
+  LatLng _restaurantPosition = const LatLng(0.0, 0.0);
   double _remainingDistance = 1000.0;
-  late Timer _timer;
+  Timer _timer = Timer(Duration.zero, () {});
   Map<String, dynamic> orderSnap = {};
   Map<String, dynamic> partnerSnap = {};
+  Map<String, dynamic> restaurantSnap = {};
   BitmapDescriptor deliveryBoyIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor restaurantIcon =
+      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
 
   bool _isLoading = false;
 
@@ -48,9 +52,10 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _isLoading = true;
     });
+
     await FirebaseFirestore.instance
         .collection('orders')
-        .where('status', isEqualTo: "active")
+        .where('active', isEqualTo: true)
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .limit(1)
         .get()
@@ -64,11 +69,28 @@ class _MapScreenState extends State<MapScreen> {
         _startLocationTracking();
       }
     });
+
+    await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(orderSnap['resUid'])
+        .get()
+        .then((value) {
+      restaurantSnap = Map.from(value.data()!);
+      _restaurantPosition = LatLng(restaurantSnap['lat'], restaurantSnap['lng']);
+    });
+
     deliveryBoyIcon = await Icon(
       Icons.delivery_dining_rounded,
-      size: 35,
+      size: 90,
       color: Colors.red[900],
     ).toBitmapDescriptor();
+
+    restaurantIcon = await Icon(
+      Icons.restaurant_menu_rounded,
+      size: 90,
+      color: Colors.orange[700],
+    ).toBitmapDescriptor();
+
     setState(() {
       _isLoading = false;
     });
@@ -76,13 +98,19 @@ class _MapScreenState extends State<MapScreen> {
 
   void _startLocationTracking() {
     _startDistanceCalculation();
-    _partnerCollection
-        .where("orderId", isEqualTo: orderSnap['orderId'])
-        .limit(1)
-        .snapshots()
-        .listen((snapshot) {
-      if (snapshot.size != 0) {
-        final data = snapshot.docs[0].data() as Map<String, dynamic>;
+    _partnerCollection.snapshots().listen((snapshot) {
+      Map<String, dynamic> partnerData = {};
+      bool partnerExist = snapshot.docs.any((partner) {
+        partnerData = Map.from(partner.data() as Map<String, dynamic>);
+        if (partnerData['orderId'] == orderSnap['orderId']) {
+          return true;
+        } else {
+          partnerData.clear();
+          return false;
+        }
+      });
+      if (partnerExist) {
+        final data = partnerData;
         // print("NAAAAAMEEEEEE: ${data['name']}");
         final newPosition = LatLng(data['lat'], data['lng']);
         setState(() {
@@ -97,6 +125,9 @@ class _MapScreenState extends State<MapScreen> {
           ),
         );
       }
+      // else {
+      //   print('CHECK THIS: PARTNER NOTTT FOUNDDDDDDDDDDDDDDDDDDD');
+      // }
     });
   }
 
@@ -136,6 +167,12 @@ class _MapScreenState extends State<MapScreen> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         infoWindow: const InfoWindow(title: "You"),
       ),
+      Marker(
+        markerId: const MarkerId('Restaurant'),
+        position: _restaurantPosition,
+        icon: restaurantIcon,
+        infoWindow: const InfoWindow(title: "Restaurant"),
+      ),
     };
     if (_currentPosition != const LatLng(0.0, 0.0)) {
       markers.add(
@@ -155,9 +192,9 @@ class _MapScreenState extends State<MapScreen> {
           )
         : Scaffold(
             resizeToAvoidBottomInset: true,
-            backgroundColor: Colors.grey[350],
+            backgroundColor: darkWhite,
             appBar: AppBar(
-              backgroundColor: Colors.grey[350],
+              backgroundColor: darkWhite,
               surfaceTintColor: Colors.transparent,
               elevation: 8,
               shadowColor: Colors.grey[350],

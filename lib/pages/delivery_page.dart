@@ -144,7 +144,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> with AutomaticKeepAlive
                             boxShadow: const [
                               BoxShadow(
                                 color: Colors.grey,
-                                blurRadius: 12,
+                                blurRadius: 8,
                                 offset: Offset(0, 3),
                               ),
                             ],

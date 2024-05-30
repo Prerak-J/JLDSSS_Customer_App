@@ -3,6 +3,7 @@ import 'package:customer_app/pages/address_page.dart';
 import 'package:customer_app/pages/delivery_page.dart';
 import 'package:customer_app/pages/history_screen.dart';
 import 'package:customer_app/pages/profile_page.dart';
+import 'package:customer_app/screens/map_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -115,6 +116,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
+          actions: [
+            Container(
+              height: 30,
+              width: 40,
+              padding: const EdgeInsets.only(right: 8),
+              child: FloatingActionButton(
+                mini: true,
+                onPressed: () {
+                  // showSnackBar('Work in Progress !', context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MapScreen()),
+                  );
+                },
+                child: const Icon(
+                  Icons.delivery_dining_rounded,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: PageView(
@@ -133,8 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _page,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.delivery_dining),
-            label: 'Delivery',
+            icon: Icon(Icons.dinner_dining_rounded),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
