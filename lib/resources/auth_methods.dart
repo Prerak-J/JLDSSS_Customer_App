@@ -270,6 +270,7 @@ class AuthMethods {
         'lng': longitude,
         'OTP': otp.toString(),
         'confirmPickup': false,
+        'confirmDelivery': false,
       });
       await _firestore
           .collection('users')

@@ -20,6 +20,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final TextEditingController _labelController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _landmarkController = TextEditingController();
+  final TextEditingController _addressController1 = TextEditingController();
   final Completer<GoogleMapController> _controller = Completer();
   bool _isLoading = false;
   Marker? _pickupMarker;
@@ -35,7 +36,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied && context.mounted) {
+      if (permission == LocationPermission.denied && mounted) {
         Navigator.pop(context);
         showSnackBar("Location permission was denied", context);
       }
@@ -74,7 +75,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         'longitude': position.longitude,
       },
     );
-    if (context.mounted) {
+    if (mounted) {
       if (res != "success") {
         showSnackBar(res, context);
       } else {
@@ -96,6 +97,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     _labelController.dispose();
     _addressController.dispose();
     _landmarkController.dispose();
+    _addressController1.dispose();
   }
 
   @override
@@ -149,13 +151,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                               elevation: 4,
                               child: GoogleMap(
                                 gestureRecognizers: {
-                                  Factory<OneSequenceGestureRecognizer>(
-                                      () => EagerGestureRecognizer())
+                                  Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())
                                 },
                                 mapType: MapType.normal,
                                 initialCameraPosition: CameraPosition(
-                                  target: LatLng(
-                                      _currentPosition!.latitude, _currentPosition!.longitude),
+                                  target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
                                   zoom: 15,
                                 ),
                                 markers: _pickupMarker != null ? {_pickupMarker!} : {},
@@ -200,9 +200,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       controller: _addressController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                        labelText: 'Address*',
-                        hintText: 'Enter your full address',
+                        labelText: 'Address Line 1*',
+                        hintText: 'Address Line 1',
                         hintStyle: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _addressController1,
+                      decoration: const InputDecoration(
+                        labelText: 'Address Line 2 (Optional)',
+                        hintText: 'Address Line 2',
+                        hintStyle: TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -222,7 +231,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             _pickupMarker != null) {
                           addAddress(
                             _labelController.text,
-                            _addressController.text,
+                            _addressController.text +
+                                (_addressController1.text.isNotEmpty ? ', ${_addressController1.text}' : ''),
                             _landmarkController.text,
                             _pickupMarker!.position,
                           );
@@ -245,9 +255,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                             ),
                             child: Text(
                               'Add Address',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w600),
+                              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),

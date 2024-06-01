@@ -69,7 +69,7 @@ class _OrderScreenState extends State<OrderScreen> {
           FirebaseAuth.instance.currentUser!.uid,
         )) ??
         {};
-    if (_userData.isEmpty && context.mounted) {
+    if (_userData.isEmpty && mounted) {
       showSnackBar("Some error occured", context);
       Navigator.pop(context);
     }
@@ -132,7 +132,7 @@ class _OrderScreenState extends State<OrderScreen> {
         longitude: longitude,
       );
 
-      if (context.mounted) {
+      if (mounted) {
         if (res == 'success') {
           // showSnackBar('Order Placed but Working on Map !', context);
           showSnackBar('Order Placed !', context);
@@ -694,10 +694,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                 ],
                               ),
-                              Row(
+                              const Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Restaurant coupon - (ONLY4U)',
                                     style: TextStyle(
                                       fontSize: 14,
@@ -706,7 +706,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text(
                                     '- ₹60.0',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w600,
                                     ),
