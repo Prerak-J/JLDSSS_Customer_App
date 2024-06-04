@@ -5,6 +5,7 @@ import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/screens/map_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
+import 'package:customer_app/widgets/discount_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class _OrderScreenState extends State<OrderScreen> {
   double latitude = 0.0;
   double longitude = 0.0;
   bool _isLoading = false;
+  Map<String, dynamic> couponApplied = {};
+  double couponDiscount = 0.0;
 
   @override
   void initState() {
@@ -73,8 +76,7 @@ class _OrderScreenState extends State<OrderScreen> {
       showSnackBar("Some error occured", context);
       Navigator.pop(context);
     }
-    var pricesSnap =
-        await FirebaseFirestore.instance.collection('prices').doc('prices@admin').get();
+    var pricesSnap = await FirebaseFirestore.instance.collection('prices').doc('prices@admin').get();
     setState(() {
       _isLoading = false;
       name = _userData['name'];
@@ -92,7 +94,7 @@ class _OrderScreenState extends State<OrderScreen> {
       deliveryFee = pricesSnap.data()!['partnerFee'].toDouble();
       platformFee = pricesSnap.data()!['platformFee'].toDouble();
       grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
-      toPay = grdTotal - 60.00;
+      toPay = grdTotal;
     });
   }
 
@@ -130,6 +132,7 @@ class _OrderScreenState extends State<OrderScreen> {
         platformFee: platformFee,
         latitude: latitude,
         longitude: longitude,
+        couponApplied: couponApplied,
       );
 
       if (mounted) {
@@ -243,8 +246,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                     Text(
                                       widget.snap['foodlist'][indice[index]]['NAME'],
-                                      style: const TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.w500),
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
                                     const SizedBox(
                                       height: 40,
@@ -278,14 +280,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         values[index]--;
                                                         sum = 0.00;
                                                         for (int i = 0; i < values.length; i++) {
-                                                          sum += values[i] *
-                                                              (widget.snap['foodlist'][indice[i]]
-                                                                  ['PRICE']);
+                                                          sum +=
+                                                              values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
                                                         }
-                                                        grdTotal = sum +
-                                                            ((gst * sum) / 100) +
-                                                            deliveryFee +
-                                                            platformFee;
+                                                        grdTotal =
+                                                            sum + ((gst * sum) / 100) + deliveryFee + platformFee;
                                                         toPay = grdTotal - 60.00;
                                                       });
                                                     } else if (values.sum <= 1) {
@@ -301,11 +300,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 Flexible(child: Container()),
                                                 Container(
                                                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                                                  padding: const EdgeInsets.symmetric(
-                                                      horizontal: 3, vertical: 2),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(3),
-                                                      color: Colors.white),
+                                                      borderRadius: BorderRadius.circular(3), color: Colors.white),
                                                   child: Text(
                                                     '${values[index]}',
                                                     style: const TextStyle(
@@ -321,14 +318,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                                       values[index]++;
                                                       sum = 0.00;
                                                       for (int i = 0; i < values.length; i++) {
-                                                        sum += values[i] *
-                                                            (widget.snap['foodlist'][indice[i]]
-                                                                ['PRICE']);
+                                                        sum +=
+                                                            values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
                                                       }
-                                                      grdTotal = sum +
-                                                          ((gst * sum) / 100) +
-                                                          deliveryFee +
-                                                          platformFee;
+                                                      grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
                                                       toPay = grdTotal - 60.00;
                                                     });
                                                   },
@@ -358,25 +351,18 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   values[index]++;
                                                   sum = 0.00;
                                                   for (int i = 0; i < values.length; i++) {
-                                                    sum += values[i] *
-                                                        (widget.snap['foodlist'][indice[i]]
-                                                            ['PRICE']);
+                                                    sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
                                                   }
-                                                  grdTotal = sum +
-                                                      ((gst * sum) / 100) +
-                                                      deliveryFee +
-                                                      platformFee;
+                                                  grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
                                                   toPay = grdTotal - 60.00;
                                                 });
                                               },
                                               child: Center(
                                                 child: Container(
                                                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                                                  padding: const EdgeInsets.symmetric(
-                                                      horizontal: 3, vertical: 2),
+                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(3),
-                                                      color: lightGreen),
+                                                      borderRadius: BorderRadius.circular(3), color: lightGreen),
                                                   child: const Text(
                                                     'ADD +',
                                                     style: TextStyle(
@@ -480,12 +466,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                         address,
                                         style: TextStyle(
                                           fontSize: 13.5,
-                                          color: address == 'Add Address'
-                                              ? Colors.teal
-                                              : Colors.black54,
-                                          fontWeight: address == 'Add Address'
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
+                                          color: address == 'Add Address' ? Colors.teal : Colors.black54,
+                                          fontWeight: address == 'Add Address' ? FontWeight.bold : FontWeight.normal,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -506,8 +488,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
                       child: Text(
                         'Available discount coupons :',
-                        style: TextStyle(
-                            fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
+                        style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
                       ),
                     ),
                     Padding(
@@ -531,24 +512,44 @@ class _OrderScreenState extends State<OrderScreen> {
                             builder: (context) => DiscountSheet(
                               snap: widget.snap,
                               menuwidth: menuWidth,
+                              grdTotal: grdTotal,
                             ),
+                          ).then(
+                            (value) {
+                              setState(() {
+                                couponApplied = Map<String, dynamic>.from(value as Map<String, dynamic>);
+                                couponDiscount = ((couponApplied['discount'] * grdTotal) / 100) > couponApplied['limit']
+                                    ? couponApplied['limit']
+                                    : (couponApplied['discount'] * grdTotal) / 100;
+
+                                toPay = grdTotal - couponDiscount;
+                              });
+                              // print(couponApplied);
+                            },
                           ),
                           dense: true,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           tileColor: lightGrey,
-                          title: const Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle_rounded,
-                                color: parrotGreen,
-                              ),
-                              Text(
-                                " You saved ₹60 with 'ONLY4U'",
-                                style: TextStyle(fontSize: 13.5),
-                              ),
-                            ],
+                          title: Row(
+                            children: couponApplied.isEmpty
+                                ? [
+                                    const Text(
+                                      "  Select a coupon",
+                                      style: TextStyle(fontSize: 13.5),
+                                    ),
+                                  ]
+                                : [
+                                    const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: parrotGreen,
+                                    ),
+                                    Text(
+                                      " You saved ${couponDiscount.toStringAsFixed(0)} with '${couponApplied['name']}'",
+                                      style: const TextStyle(fontSize: 13.5),
+                                    ),
+                                  ],
                           ),
                           trailing: const Icon(
                             Icons.keyboard_arrow_right,
@@ -561,8 +562,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
                       child: Text(
                         'Bill Summary :',
-                        style: TextStyle(
-                            fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
+                        style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16, color: appBarGreen),
                       ),
                     ),
                     Padding(
@@ -694,19 +694,21 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                 ],
                               ),
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Restaurant coupon - (ONLY4U)',
-                                    style: TextStyle(
+                                    couponApplied.isEmpty
+                                        ? 'No Coupon Applied'
+                                        : 'Restaurant coupon - (${couponApplied['name']})',
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   Text(
-                                    '- ₹60.0',
-                                    style: TextStyle(
+                                    '- ₹${couponDiscount.toStringAsFixed(2)}',
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       // fontWeight: FontWeight.w600,
                                     ),
@@ -797,8 +799,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           children: [
                             Text(
                               'Place Order ',
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                             Icon(
                               Icons.keyboard_arrow_right_rounded,
@@ -820,10 +821,12 @@ class _OrderScreenState extends State<OrderScreen> {
 class DiscountSheet extends StatefulWidget {
   final Map<String, dynamic> snap;
   final double menuwidth;
+  final double grdTotal;
   const DiscountSheet({
     super.key,
     required this.snap,
     required this.menuwidth,
+    required this.grdTotal,
   });
 
   @override
@@ -858,27 +861,9 @@ class _DiscountSheetState extends State<DiscountSheet> {
               ),
             ),
           ),
-          body: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 500,
-                  width: double.infinity,
-                  color: Colors.lightGreen,
-                  child: const Center(
-                    child: Text('DISCOUNT COUPOONSSSS'),
-                  ),
-                ),
-                Container(
-                  height: 500,
-                  width: double.infinity,
-                  color: Colors.lightBlueAccent,
-                  child: const Center(child: Text('DISCOUNT COUPOONSSSS')),
-                )
-              ],
-            ),
+          body: DiscountList(
+            discountList: List<Map<String, dynamic>>.from(widget.snap['discountList']),
+            grdTotal: widget.grdTotal,
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
@@ -6,7 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChangeNumberScreen extends StatefulWidget {
-  const ChangeNumberScreen({super.key});
+  final String from;
+  const ChangeNumberScreen({super.key, this.from=''});
 
   @override
   State<ChangeNumberScreen> createState() => _ChangeNumberScreenState();
@@ -30,11 +32,20 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
       _isLoading = false;
     });
 
-    if (res != "success" && context.mounted) {
+    if (res != "success" && mounted) {
       showSnackBar(res, context);
-    } else if (context.mounted) {
+    } else if (mounted) {
       showSnackBar('Number updated', context);
-      Navigator.of(context).pop();
+      if (widget.from == 'google') {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomeScreen(),
+            ),
+          );
+      } else {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -70,8 +81,12 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
                 height: 20,
               ),
               const Text(
-                'Change your number',
-                style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 30),
+                'Add/Change your number',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontSize: 26,
+                ),
               ),
               const SizedBox(
                 height: 30,
@@ -122,7 +137,7 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
                     child: Container(
                       width: 150,
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                       decoration: const ShapeDecoration(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
@@ -138,7 +153,7 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
                               ),
                             )
                           : const Text(
-                              'Change number',
+                              'Update Number',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w600,

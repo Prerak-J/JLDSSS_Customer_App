@@ -54,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       _isLoading = false;
     });
-    if (context.mounted) {
+    if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => OtpScreen(

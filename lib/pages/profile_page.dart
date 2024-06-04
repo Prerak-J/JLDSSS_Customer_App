@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pop(context);
     String res = await AuthMethods().logoutUser();
 
-    if (context.mounted) {
+    if (mounted) {
       if (res == "success") {
         showSnackBar('Logged out', context);
         Navigator.of(context).pushReplacement(
@@ -92,9 +92,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ))!;
     setState(() {
       _isLoading = false;
-      name = _userData['name'];
-      email = _userData['email'];
-      phone = _userData['phone'];
+      name = _userData['name']??'';
+      email = _userData['email']??'';
+      phone = _userData['phone']??'';
     });
   }
 

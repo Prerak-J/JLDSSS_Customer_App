@@ -3,10 +3,61 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  //SIGNIN WITH GOOGLE
+
+  Future<String> signInWithGoogle() async {
+    String res = 'Some error occured';
+    final GoogleSignInAccount? googleUser;
+    try {
+      googleUser = await GoogleSignIn().signIn();
+    } on Exception catch (e) {
+      return e.toString();
+    }
+
+    if (googleUser != null) {
+      try {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+        final User? user = userCredential.user;
+
+        if (user != null) {
+          final String? displayName = user.displayName;
+          final String email = user.email ?? '';
+          final String? phoneNumber = user.phoneNumber;
+
+          final userData = {
+            'name': displayName,
+            'email': email,
+            'phone': phoneNumber,
+          };
+
+          final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+          await userRef.set(userData, SetOptions(merge: true));
+
+          res = 'success';
+        }
+      } on Exception catch (e) {
+        return e.toString();
+      }
+    } else {
+      return 'not selected';
+    }
+    return res;
+  }
 
   //SIGN UP USER
   Future<String> signUpUser({
@@ -61,8 +112,7 @@ class AuthMethods {
   //UID FROM TOKEN IF TOKEN EXPERIED THEN NEED TO LOGIN AGAIN AND REGENRATE TOKENS
   Future<Map<String, dynamic>?> getUserData(String uid) async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection('users').doc(uid).get();
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore.collection('users').doc(uid).get();
 
       if (snapshot.exists) {
         // Get username and email directly from the DocumentSnapshot
@@ -79,7 +129,7 @@ class AuthMethods {
         Map<String, dynamic> userData = snapshot.data()!;
         return userData;
       } else {
-        return null; 
+        return null;
         // Document does not exist
       }
     } catch (error) {
@@ -235,6 +285,7 @@ class AuthMethods {
     required double platformFee,
     required double latitude,
     required double longitude,
+    required Map<String, dynamic> couponApplied,
   }) async {
     String res = 'Some error occured';
     Random rnd = Random();
@@ -271,11 +322,9 @@ class AuthMethods {
         'OTP': otp.toString(),
         'confirmPickup': false,
         'confirmDelivery': false,
+        'couponApplied': couponApplied,
       });
-      await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .update({'activeOrder': true});
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({'activeOrder': true});
       res = 'success';
     } catch (e) {
       res = e.toString();

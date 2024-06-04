@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/pages/menu_page.dart';
 import 'package:customer_app/screens/global_search_screen.dart';
@@ -203,17 +202,73 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                           children: [
                                             Container(
                                               // alignment: const Alignment(-0.92, 0.81),
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                              ),
-                                              child: Text(
-                                                snapshot.data!.docs[index].data()['name'],
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                softWrap: false,
-                                                overflow: TextOverflow.ellipsis,
+                                              padding: const EdgeInsets.only(left: 10, right: 6),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      snapshot.data!.docs[index].data()['name'],
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                      softWrap: false,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
+                                                      // right: 8,
+                                                      bottom: 4,
+                                                    ),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        color: !(snapshot.data!.docs[index]
+                                                                .data()
+                                                                .containsKey('rating'))
+                                                            ? Colors.grey[350]
+                                                            : snapshot.data!.docs[index].data()['rating'] >= 4.0
+                                                                ? Colors.green[900]
+                                                                : snapshot.data!.docs[index].data()['rating'] >= 3.0
+                                                                    ? Colors.green[700]
+                                                                    : snapshot.data!.docs[index].data()['rating'] >= 2.0
+                                                                        ? Colors.brown
+                                                                        : snapshot.data!.docs[index].data()['rating'] >=
+                                                                                1.0
+                                                                            ? Colors.red[400]
+                                                                            : Colors.red[800],
+                                                      ),
+                                                      child: !(snapshot.data!.docs[index].data().containsKey('rating'))
+                                                          ? const Text(
+                                                              'No Ratings yet',
+                                                              style: TextStyle(color: Colors.black, fontSize: 11),
+                                                            )
+                                                          : Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: [
+                                                                Text(
+                                                                  snapshot.data!.docs[index]
+                                                                      .data()['rating']
+                                                                      .toStringAsFixed(1),
+                                                                  style: const TextStyle(
+                                                                      color: Colors.white, fontSize: 11),
+                                                                ),
+                                                                const Padding(
+                                                                  padding: EdgeInsets.only(bottom: 2),
+                                                                  child: Icon(
+                                                                    Icons.star_rate_rounded,
+                                                                    color: Colors.amber,
+                                                                    size: 16,
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                             Container(
@@ -231,16 +286,23 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
+                                            const SizedBox(
+                                              height: 4,
+                                            )
                                           ],
                                         ),
                                       ),
                                     ),
                                   ),
+                                  // Align(
+                                  //   alignment: const Alignment(1, 0.8),
+                                  //   child: ,
+                                  // ),
                                   !(snapshot.data!.docs[index].data()['open'])
                                       ? const Align(
                                           alignment: Alignment.bottomRight,
                                           child: Padding(
-                                            padding: EdgeInsets.all(8),
+                                            padding: EdgeInsets.only(right: 8, bottom: 8),
                                             child: Text(
                                               'Closed',
                                               style: TextStyle(
@@ -259,6 +321,11 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                       childCount: snapshot.data!.docs.length,
                     ),
                   ),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 50,
+                    ),
+                  )
                 ],
               ),
               StreamBuilder(
@@ -275,6 +342,9 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                     if (snapshot.data!.docs.isEmpty) {
                       return Container();
                     } else {
+                      if (snapshot.data!.docs[0].data()['confirmDelivery']) {
+                        return Container();
+                      }
                       return AnimContainer(displayStatus: snapshot.data!.docs[0].data()['displayStatus']);
                     }
                   }),

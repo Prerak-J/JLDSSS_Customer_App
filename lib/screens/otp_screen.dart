@@ -45,7 +45,7 @@ class _OtpScreenState extends State<OtpScreen> {
       setState(() {
         _isLoading = false;
       });
-      if (context.mounted) {
+      if (mounted) {
         if (res == 'success') {
           showSnackBar('Profile deleted', context);
           Navigator.of(context).pop();
@@ -121,7 +121,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 height: 15,
               ),
               const Text(
-                "We've sent you a 4-digit code to your registered mobile number",
+                "We've sent you a 6-digit code to your registered mobile number",
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 style: TextStyle(
@@ -151,7 +151,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 textEditingController: _otpController,
                 hintText: 'Enter OTP',
                 textInputType: TextInputType.number,
-                maxLength: 4,
+                maxLength: 6,
               ),
               const SizedBox(
                 height: 32,

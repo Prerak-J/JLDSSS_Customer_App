@@ -110,9 +110,53 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                           const SizedBox(
                             height: 8,
                           ),
-                          Text(
-                            '  ${widget.snap['type']} $symbol',
-                            style: const TextStyle(fontSize: 14),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '  ${widget.snap['type']} $symbol   ',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: !(widget.snap.containsKey('rating'))
+                                      ? Colors.grey[350]
+                                      : widget.snap['rating'] >= 4.0
+                                          ? Colors.green[900]
+                                          : widget.snap['rating'] >= 3.0
+                                              ? Colors.green[700]
+                                              : widget.snap['rating'] >= 2.0
+                                                  ? Colors.brown
+                                                  : widget.snap['rating'] >= 1.0
+                                                      ? Colors.red[400]
+                                                      : Colors.red[800],
+                                ),
+                                child: !(widget.snap.containsKey('rating'))
+                                    ? const Text(
+                                        'No Ratings yet',
+                                        style: TextStyle(color: Colors.black, fontSize: 11),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            widget.snap['rating'].toStringAsFixed(1),
+                                            style: const TextStyle(color: Colors.white, fontSize: 11),
+                                          ),
+                                          const Padding(
+                                            padding: EdgeInsets.only(bottom: 2),
+                                            child: Icon(
+                                              Icons.star_rate_rounded,
+                                              color: Colors.amber,
+                                              size: 16,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                              )
+                            ],
                           ),
                         ],
                       ),
@@ -192,8 +236,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                             }
                             if (selectedType == 'Veg') {
                               if (selectedCategory != 'All items') {
-                                if (widget.snap['foodlist'][index]['category'] !=
-                                        selectedCategory ||
+                                if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
                                     widget.snap['foodlist'][index]['type'] != 'veg') {
                                   noOfItems++;
                                   if (index == counter.length - 1 && noOfItems == counter.length) {
@@ -237,8 +280,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                             }
                             if (selectedType == 'Non-Veg') {
                               if (selectedCategory != 'All items') {
-                                if (widget.snap['foodlist'][index]['category'] !=
-                                        selectedCategory ||
+                                if (widget.snap['foodlist'][index]['category'] != selectedCategory ||
                                     widget.snap['foodlist'][index]['type'] != 'non_veg') {
                                   noOfItems++;
                                   if (index == counter.length - 1 && noOfItems == counter.length) {
@@ -297,9 +339,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                 ),
                               ),
                               Container(
-                                color: widget.snap['foodlist'][index]['AVAILABLE']
-                                    ? Colors.white
-                                    : Colors.grey[350],
+                                color: widget.snap['foodlist'][index]['AVAILABLE'] ? Colors.white : Colors.grey[350],
                                 height: 190,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
@@ -331,8 +371,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                         }
                                       }),
                                       child: Container(
-                                        padding:
-                                            const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                                         alignment: Alignment.topLeft,
                                         // color: lightGreen,
                                         width: menuWidth * 0.63,
@@ -358,8 +397,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             ),
                                             Text(
                                               widget.snap['foodlist'][index]['NAME'],
-                                              style: const TextStyle(
-                                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                             ),
                                             Text(
                                               '₹${widget.snap['foodlist'][index]['PRICE'].toString()}',
@@ -371,16 +409,14 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             ),
                                             Text(
                                               widget.snap['foodlist'][index]['DESCRIPTION'],
-                                              style: const TextStyle(
-                                                  fontSize: 12, fontWeight: FontWeight.w400),
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
                                     Container(
-                                      padding:
-                                          const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       // color: Colors.green,
                                       width: menuWidth * 0.37,
                                       alignment: Alignment.topCenter,
@@ -393,21 +429,16 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                             child: ClipRRect(
                                               clipBehavior: Clip.hardEdge,
                                               borderRadius: BorderRadius.circular(18),
-                                              child: (widget.snap['foodlist'][index]['photoURL'] !=
-                                                          null &&
-                                                      widget.snap['foodlist'][index]['photoURL'] !=
-                                                          '')
+                                              child: (widget.snap['foodlist'][index]['photoURL'] != null &&
+                                                      widget.snap['foodlist'][index]['photoURL'] != '')
                                                   ? Image.network(
                                                       widget.snap['foodlist'][index]['photoURL'],
                                                       height: 120,
                                                       fit: BoxFit.cover,
-                                                      cacheWidth:
-                                                          (MediaQuery.of(context).size.width *
-                                                                  MediaQuery.of(context)
-                                                                      .devicePixelRatio)
-                                                              .round(),
-                                                      color: widget.snap['foodlist'][index]
-                                                              ['AVAILABLE']
+                                                      cacheWidth: (MediaQuery.of(context).size.width *
+                                                              MediaQuery.of(context).devicePixelRatio)
+                                                          .round(),
+                                                      color: widget.snap['foodlist'][index]['AVAILABLE']
                                                           ? null
                                                           : Colors.grey,
                                                       colorBlendMode: BlendMode.hue,
@@ -416,13 +447,10 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                       'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
                                                       height: 120,
                                                       fit: BoxFit.cover,
-                                                      cacheWidth:
-                                                          (MediaQuery.of(context).size.width *
-                                                                  MediaQuery.of(context)
-                                                                      .devicePixelRatio)
-                                                              .round(),
-                                                      color: widget.snap['foodlist'][index]
-                                                              ['AVAILABLE']
+                                                      cacheWidth: (MediaQuery.of(context).size.width *
+                                                              MediaQuery.of(context).devicePixelRatio)
+                                                          .round(),
+                                                      color: widget.snap['foodlist'][index]['AVAILABLE']
                                                           ? null
                                                           : Colors.grey,
                                                       colorBlendMode: BlendMode.hue,
@@ -440,8 +468,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                   padding: const EdgeInsets.all(2),
                                                   // width: menuWidth * 0.16,
                                                   decoration: BoxDecoration(
-                                                    border:
-                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    border: Border.all(color: secondaryGreen, width: 2),
                                                     borderRadius: BorderRadius.circular(10),
                                                     color: Theme.of(context).primaryColor,
                                                   ),
@@ -453,8 +480,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                                 counter[index]--;
                                                                 sum = counter.sum;
                                                                 if (sum == 0) {
-                                                                  popUpAnimationController
-                                                                      .reverse();
+                                                                  popUpAnimationController.reverse();
                                                                 }
                                                               })
                                                             : {},
@@ -466,17 +492,13 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                       ),
                                                       Flexible(child: Container()),
                                                       Container(
-                                                        margin: const EdgeInsets.symmetric(
-                                                            horizontal: 3),
-                                                        padding: const EdgeInsets.symmetric(
-                                                            horizontal: 3, vertical: 2),
+                                                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                         decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(3),
                                                             color: Theme.of(context).primaryColor),
                                                         child: Text(
-                                                          counter[index] == 0
-                                                              ? 'ADD'
-                                                              : '${counter[index]}',
+                                                          counter[index] == 0 ? 'ADD' : '${counter[index]}',
                                                           style: const TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 16,
@@ -508,19 +530,16 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                   padding: const EdgeInsets.all(2),
                                                   // width: menuWidth * 0.16,
                                                   decoration: BoxDecoration(
-                                                    border:
-                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    border: Border.all(color: secondaryGreen, width: 2),
                                                     borderRadius: BorderRadius.circular(10),
-                                                    color: widget.snap['foodlist'][index]
-                                                                ['AVAILABLE'] &&
+                                                    color: widget.snap['foodlist'][index]['AVAILABLE'] &&
                                                             (widget.snap['open'])
                                                         ? lightGreen
                                                         : Colors.grey,
                                                   ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      if (widget.snap['foodlist'][index]
-                                                              ['AVAILABLE'] &&
+                                                      if (widget.snap['foodlist'][index]['AVAILABLE'] &&
                                                           (widget.snap['open'])) {
                                                         setState(() {
                                                           counter[index]++;
@@ -528,22 +547,18 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                                                           popUpAnimationController.forward();
                                                         });
                                                       } else if (!(widget.snap['open'])) {
-                                                        showSnackBar(
-                                                            'Restaurant is closed!', context);
+                                                        showSnackBar('Restaurant is closed!', context);
                                                       } else {
                                                         showSnackBar('Item unavailable!', context);
                                                       }
                                                     },
                                                     child: Center(
                                                       child: Container(
-                                                        margin: const EdgeInsets.symmetric(
-                                                            horizontal: 3),
-                                                        padding: const EdgeInsets.symmetric(
-                                                            horizontal: 3, vertical: 2),
+                                                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                         decoration: BoxDecoration(
                                                           borderRadius: BorderRadius.circular(3),
-                                                          color: (widget.snap['foodlist'][index]
-                                                                      ['AVAILABLE'] &&
+                                                          color: (widget.snap['foodlist'][index]['AVAILABLE'] &&
                                                                   (widget.snap['open']))
                                                               ? lightGreen
                                                               : Colors.grey,
@@ -568,8 +583,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                             ],
                           );
                         },
-                        childCount:
-                            widget.snap['foodlist'] != null ? widget.snap['foodlist'].length : 0,
+                        childCount: widget.snap['foodlist'] != null ? widget.snap['foodlist'].length : 0,
                       ),
                     ),
               SliverToBoxAdapter(
@@ -582,8 +596,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
           Align(
             alignment: Alignment.bottomCenter,
             child: SlideTransition(
-              position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
-                  .animate(popUpAnimationController),
+              position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(popUpAnimationController),
               child: InkWell(
                 onTap: () => Navigator.push(
                   context,
@@ -866,8 +879,7 @@ class _BuildSheetState extends State<BuildSheet> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3), color: Colors.white),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), color: Colors.white),
                       child: Text(
                         counter == 0 ? 'ADD' : '$counter',
                         style: const TextStyle(

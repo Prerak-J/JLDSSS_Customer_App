@@ -12,7 +12,7 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   int orders = 0;
-  Map<String, dynamic> orderSnap = {};
+  List<Map<String, dynamic>> orderSnap = [];
   bool _isLoading = false;
 
   @override
@@ -31,11 +31,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
           'uid',
           isEqualTo: FirebaseAuth.instance.currentUser!.uid,
         )
-        .count()
         .get()
-        .then(
-          (value) => orders = value.count ?? 0,
-        );
+        .then((value) {
+      orders = value.size;
+      orderSnap = List<Map<String, dynamic>>.from(value.docs.map((doc) => doc.data()));
+    });
     setState(() {
       _isLoading = false;
     });
@@ -84,7 +84,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ? SliverList.builder(
                             itemCount: orders,
                             itemBuilder: (context, index) {
-                              orderSnap = snapshot.data!.docs[index].data();
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -111,7 +110,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             right: 16,
                                           ),
                                           child: Text(
-                                            orderSnap['resName'],
+                                            orderSnap[index]['resName'],
                                             style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500,
@@ -129,8 +128,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         padding: const EdgeInsets.all(0),
                                         shrinkWrap: true,
                                         physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: orderSnap['orders'].length,
-                                        itemBuilder: (context, index) => Column(
+                                        itemCount: orderSnap[index]['orders'].length,
+                                        itemBuilder: (context, itemIndex) => Column(
                                           children: [
                                             ListTile(
                                               shape: RoundedRectangleBorder(
@@ -143,7 +142,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   right: 16,
                                                 ),
                                                 child: Text(
-                                                  orderSnap['orders'][index],
+                                                  orderSnap[index]['orders'][itemIndex],
                                                   style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w500,
@@ -172,9 +171,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           children: [
                                             Text(
                                               '${DateFormat.yMMMMd().format(
-                                                orderSnap['datePlaced'].toDate(),
+                                                orderSnap[index]['datePlaced'].toDate(),
                                               )} at ${DateFormat.jm().format(
-                                                orderSnap['datePlaced'].toDate(),
+                                                orderSnap[index]['datePlaced'].toDate(),
                                               )}',
                                               style: const TextStyle(
                                                 fontSize: 12,
@@ -184,7 +183,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                             Flexible(child: Container()),
                                             Text(
-                                              '₹${orderSnap['toPay']}',
+                                              '₹${orderSnap[index]['toPay']}',
                                               style: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,

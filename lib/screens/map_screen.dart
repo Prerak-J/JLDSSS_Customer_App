@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer_app/screens/ratings_screen.dart';
 import 'package:customer_app/utils/colors.dart';
+import 'package:customer_app/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -116,6 +118,19 @@ class _MapScreenState extends State<MapScreen> {
         setState(() {
           _buttonLoading = false;
         });
+        if (mounted) {
+          showSnackBar('Delivery Completed', context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RatingsScreen(
+                orderSnap: orderSnap,
+                partnerSnap: partnerSnap,
+                restaurantSnap: restaurantSnap,
+              ),
+            ),
+          );
+        }
         // if (mounted) {
         //   Navigator.pop(context);
         //   showSnackBar('Delivery Completed. Great Job!', context);
@@ -165,6 +180,7 @@ class _MapScreenState extends State<MapScreen> {
       });
       if (partnerExist) {
         final data = partnerData;
+        partnerSnap = Map.from(partnerData);
         // print("NAAAAAMEEEEEE: ${data['name']}");
         final newPosition = LatLng(data['lat'], data['lng']);
         setState(() {
@@ -246,7 +262,7 @@ class _MapScreenState extends State<MapScreen> {
           )
         : _noActiveOrder
             ? Scaffold(
-              appBar: AppBar(),
+                appBar: AppBar(),
                 body: const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
