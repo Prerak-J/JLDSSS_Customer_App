@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:uuid/uuid.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -34,6 +35,18 @@ class AuthMethods {
         final User? user = userCredential.user;
 
         if (user != null) {
+          String? token;
+          final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+          token = await firebaseMessaging.getToken();
+          //LOG IN
+          if (await FirebaseFirestore.instance.collection('users').doc(user.uid).get().then((snap) => snap.exists)) {
+            await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+              {'fcmToken': token},
+            );
+            return 'success';
+          }
+
+          //SIGN UP
           final String? displayName = user.displayName;
           final String email = user.email ?? '';
           final String? phoneNumber = user.phoneNumber;
@@ -42,14 +55,15 @@ class AuthMethods {
             'name': displayName,
             'email': email,
             'phone': phoneNumber,
+            'addressList': [],
+            'fcmToken': token,
           };
 
           final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
           await userRef.set(userData, SetOptions(merge: true));
-
-          res = 'success';
         }
+        res = 'success';
       } on Exception catch (e) {
         return e.toString();
       }
@@ -67,16 +81,20 @@ class AuthMethods {
     required String password,
   }) async {
     String res = "Some error occured";
+    final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
     try {
       if (name.isNotEmpty && email.isNotEmpty && phone.isNotEmpty && password.isNotEmpty) {
         //REGISTER USER
         UserCredential? cred;
+        String? token;
         try {
           cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+          token = await firebaseMessaging.getToken();
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
             try {
               cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
+              token = await firebaseMessaging.getToken();
             } on FirebaseAuthException catch (e) {
               return e.message ?? e.code;
             }
@@ -91,8 +109,8 @@ class AuthMethods {
           'phone': '+91$phone',
           'password': password,
           'addressList': [],
+          'fcmToken': token,
         });
-
         res = "success";
       } else {
         res = "Please enter all fields";
@@ -147,7 +165,19 @@ class AuthMethods {
     try {
       if (email.isNotEmpty && password.isNotEmpty) {
         await _auth.signInWithEmailAndPassword(email: email, password: password);
-        res = "success";
+        if (await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .get()
+            .then((snap) => snap.exists)) {
+          String? token = await FirebaseMessaging.instance.getToken();
+          await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).update(
+            {'fcmToken': token},
+          );
+          res = "success";
+        } else {
+          return 'Please Sign Up first';
+        }
       } else {
         res = "Please enter all fields";
       }
@@ -289,7 +319,9 @@ class AuthMethods {
   }) async {
     String res = 'Some error occured';
     Random rnd = Random();
-    int otp = rnd.nextInt(900000) + 100000;
+    int id = rnd.nextInt(900) + 100;
+    int adminPin = rnd.nextInt(9000) + 1000;
+    int customerPin = rnd.nextInt(9000) + 1000;
     try {
       User? curr = _auth.currentUser!;
       String? uuid = const Uuid().v4();
@@ -319,10 +351,13 @@ class AuthMethods {
         'displayStatus': 'Order Placed',
         'lat': latitude,
         'lng': longitude,
-        'OTP': otp.toString(),
+        'OrderId': 'JLD${id.toString()}',
+        'AdminPin': adminPin.toString(),
+        'CustomerPin': customerPin.toString(),
         'confirmPickup': false,
         'confirmDelivery': false,
         'couponApplied': couponApplied,
+        'preparing': false,
       });
       await _firestore.collection('users').doc(_auth.currentUser!.uid).update({'activeOrder': true});
       res = 'success';

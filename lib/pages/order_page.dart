@@ -285,7 +285,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         }
                                                         grdTotal =
                                                             sum + ((gst * sum) / 100) + deliveryFee + platformFee;
-                                                        toPay = grdTotal - 60.00;
+                                                        toPay = grdTotal;
+                                                        couponApplied.clear();
+                                                        couponDiscount = 0.0;
                                                       });
                                                     } else if (values.sum <= 1) {
                                                       Navigator.pop(context);
@@ -322,7 +324,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                             values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
                                                       }
                                                       grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
-                                                      toPay = grdTotal - 60.00;
+                                                      toPay = grdTotal;
+                                                      couponApplied.clear();
+                                                      couponDiscount = 0.0;
                                                     });
                                                   },
                                                   child: const Icon(
@@ -354,7 +358,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                     sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
                                                   }
                                                   grdTotal = sum + ((gst * sum) / 100) + deliveryFee + platformFee;
-                                                  toPay = grdTotal - 60.00;
+                                                  toPay = grdTotal;
+                                                  couponApplied.clear();
+                                                  couponDiscount = 0.0;
                                                 });
                                               },
                                               child: Center(
@@ -518,9 +524,10 @@ class _OrderScreenState extends State<OrderScreen> {
                             (value) {
                               setState(() {
                                 couponApplied = Map<String, dynamic>.from(value as Map<String, dynamic>);
-                                couponDiscount = ((couponApplied['discount'] * grdTotal) / 100) > couponApplied['limit']
-                                    ? couponApplied['limit']
-                                    : (couponApplied['discount'] * grdTotal) / 100;
+                                couponDiscount =
+                                    ((couponApplied['discount'] * grdTotal) / 100) > couponApplied['limit'].toDouble()
+                                        ? couponApplied['limit'].toDouble()
+                                        : (couponApplied['discount'] * grdTotal) / 100;
 
                                 toPay = grdTotal - couponDiscount;
                               });
@@ -546,7 +553,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                       color: parrotGreen,
                                     ),
                                     Text(
-                                      " You saved ${couponDiscount.toStringAsFixed(0)} with '${couponApplied['name']}'",
+                                      " You saved ₹${couponDiscount.toStringAsFixed(0)} with '${couponApplied['name']}'",
                                       style: const TextStyle(fontSize: 13.5),
                                     ),
                                   ],

@@ -3,6 +3,7 @@ import 'package:customer_app/pages/change_number.dart';
 import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/signup_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
+import 'package:customer_app/screens/verification.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:customer_app/widgets/text_field_input.dart';
@@ -80,14 +81,16 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false;
     });
+    
+    //TODO: change to verification screen after testing
 
-    if (res != "success" && context.mounted) {
+    if (res != "success" && mounted) {
       showSnackBar(res, context);
-    } else if (context.mounted) {
+    } else if (mounted) {
       showSnackBar('Welcome back!', context);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const VerificationScreen(),
         ),
       );
     }
@@ -217,8 +220,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(
-                  // width: MediaQuery,
-                  // height: 80,
                   child: Transform.scale(
                     scale: 1.2,
                     child: SignInButton(

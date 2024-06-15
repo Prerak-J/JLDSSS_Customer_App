@@ -165,7 +165,10 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                             cacheWidth: (MediaQuery.of(context).size.width *
                                                     MediaQuery.of(context).devicePixelRatio)
                                                 .round(),
-                                            color: snapshot.data!.docs[index].data()['open'] ? null : Colors.grey,
+                                            color: (snapshot.data!.docs[index].data()['open'] &&
+                                                    snapshot.data!.docs[index].data()['openAdmin'])
+                                                ? null
+                                                : Colors.grey,
                                             colorBlendMode: BlendMode.hue,
                                           )
                                         : Image.network(
@@ -176,7 +179,10 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                             cacheWidth: (MediaQuery.of(context).size.width *
                                                     MediaQuery.of(context).devicePixelRatio)
                                                 .round(),
-                                            color: snapshot.data!.docs[index].data()['open'] ? null : Colors.grey,
+                                            color: (snapshot.data!.docs[index].data()['open'] &&
+                                                    snapshot.data!.docs[index].data()['openAdmin'])
+                                                ? null
+                                                : Colors.grey,
                                             colorBlendMode: BlendMode.hue,
                                           ),
                                   ),
@@ -250,20 +256,18 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                               children: [
                                                                 Text(
-                                                                  snapshot.data!.docs[index]
-                                                                      .data()['rating']
-                                                                      .toStringAsFixed(1),
+                                                                  '${snapshot.data!.docs[index].data()['rating'].toStringAsFixed(1)} ⭐',
                                                                   style: const TextStyle(
                                                                       color: Colors.white, fontSize: 11),
                                                                 ),
-                                                                const Padding(
-                                                                  padding: EdgeInsets.only(bottom: 2),
-                                                                  child: Icon(
-                                                                    Icons.star_rate_rounded,
-                                                                    color: Colors.amber,
-                                                                    size: 16,
-                                                                  ),
-                                                                )
+                                                                // const Padding(
+                                                                //   padding: EdgeInsets.only(bottom: 2),
+                                                                //   child: Icon(
+                                                                //     Icons.star_rate_rounded,
+                                                                //     color: Colors.amber,
+                                                                //     size: 16,
+                                                                //   ),
+                                                                // ),
                                                               ],
                                                             ),
                                                     ),
@@ -298,7 +302,8 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                                   //   alignment: const Alignment(1, 0.8),
                                   //   child: ,
                                   // ),
-                                  !(snapshot.data!.docs[index].data()['open'])
+                                  !(snapshot.data!.docs[index].data()['open'] &&
+                                          snapshot.data!.docs[index].data()['openAdmin'])
                                       ? const Align(
                                           alignment: Alignment.bottomRight,
                                           child: Padding(

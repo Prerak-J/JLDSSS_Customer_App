@@ -156,8 +156,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                         }
                                       }),
                                       child: Container(
-                                        padding:
-                                            const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                                         alignment: Alignment.topLeft,
                                         // color: lightGreen,
                                         width: menuWidth * 0.63,
@@ -166,9 +165,7 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                           children: [
                                             Align(
                                               alignment: const Alignment(-1.02, -1),
-                                              child: widget.snap['foodlist'][filteredIndices[index]]
-                                                          ['type'] ==
-                                                      'veg'
+                                              child: widget.snap['foodlist'][filteredIndices[index]]['type'] == 'veg'
                                                   ? const Icon(
                                                       CupertinoIcons.dot_square,
                                                       color: Color(0xff14801b),
@@ -184,10 +181,8 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                               height: 4,
                                             ),
                                             Text(
-                                              widget.snap['foodlist'][filteredIndices[index]]
-                                                  ['NAME'],
-                                              style: const TextStyle(
-                                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                              widget.snap['foodlist'][filteredIndices[index]]['NAME'],
+                                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                             ),
                                             Text(
                                               '₹${widget.snap['foodlist'][filteredIndices[index]]['PRICE'].toString()}',
@@ -198,18 +193,15 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                               ),
                                             ),
                                             Text(
-                                              widget.snap['foodlist'][filteredIndices[index]]
-                                                  ['DESCRIPTION'],
-                                              style: const TextStyle(
-                                                  fontSize: 12, fontWeight: FontWeight.w400),
+                                              widget.snap['foodlist'][filteredIndices[index]]['DESCRIPTION'],
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
                                     Container(
-                                      padding:
-                                          const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       // color: Colors.green,
                                       width: menuWidth * 0.37,
                                       alignment: Alignment.topCenter,
@@ -221,26 +213,18 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                             width: 110,
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(18),
-                                              child: (widget.snap['foodlist']
-                                                                  [filteredIndices[index]]
-                                                              ['photoURL'] !=
+                                              child: (widget.snap['foodlist'][filteredIndices[index]]['photoURL'] !=
                                                           null &&
-                                                      widget.snap['foodlist']
-                                                                  [filteredIndices[index]]
-                                                              ['photoURL'] !=
-                                                          '')
+                                                      widget.snap['foodlist'][filteredIndices[index]]['photoURL'] != '')
                                                   ? Image.network(
-                                                      widget.snap['foodlist']
-                                                          [filteredIndices[index]]['photoURL'],
+                                                      widget.snap['foodlist'][filteredIndices[index]]['photoURL'],
                                                       height: 120,
                                                       fit: BoxFit.cover,
-                                                      cacheWidth:
-                                                          (MediaQuery.of(context).size.width *
-                                                                  MediaQuery.of(context)
-                                                                      .devicePixelRatio)
-                                                              .round(),
-                                                      color: widget.snap['foodlist']
-                                                              [filteredIndices[index]]['AVAILABLE']
+                                                      cacheWidth: (MediaQuery.of(context).size.width *
+                                                              MediaQuery.of(context).devicePixelRatio)
+                                                          .round(),
+                                                      color: widget.snap['foodlist'][filteredIndices[index]]
+                                                              ['AVAILABLE']
                                                           ? null
                                                           : Colors.grey,
                                                       colorBlendMode: BlendMode.hue,
@@ -249,13 +233,11 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                                       'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YnVyZ2VyfGVufDB8fDB8fHww',
                                                       height: 120,
                                                       fit: BoxFit.cover,
-                                                      cacheWidth:
-                                                          (MediaQuery.of(context).size.width *
-                                                                  MediaQuery.of(context)
-                                                                      .devicePixelRatio)
-                                                              .round(),
-                                                      color: widget.snap['foodlist']
-                                                              [filteredIndices[index]]['AVAILABLE']
+                                                      cacheWidth: (MediaQuery.of(context).size.width *
+                                                              MediaQuery.of(context).devicePixelRatio)
+                                                          .round(),
+                                                      color: widget.snap['foodlist'][filteredIndices[index]]
+                                                              ['AVAILABLE']
                                                           ? null
                                                           : Colors.grey,
                                                       colorBlendMode: BlendMode.hue,
@@ -273,26 +255,22 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                                   padding: const EdgeInsets.all(2),
                                                   // width: menuWidth * 0.16,
                                                   decoration: BoxDecoration(
-                                                    border:
-                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    border: Border.all(color: secondaryGreen, width: 2),
                                                     borderRadius: BorderRadius.circular(10),
                                                     color: Theme.of(context).primaryColor,
                                                   ),
                                                   child: Row(
                                                     children: [
                                                       InkWell(
-                                                        onTap: () =>
-                                                            counter[filteredIndices[index]] > 0
-                                                                ? setState(() {
-                                                                    counter[
-                                                                        filteredIndices[index]]--;
-                                                                    sum = counter.sum;
-                                                                    if (sum == 0) {
-                                                                      popUpAnimationController
-                                                                          .reverse();
-                                                                    }
-                                                                  })
-                                                                : {},
+                                                        onTap: () => counter[filteredIndices[index]] > 0
+                                                            ? setState(() {
+                                                                counter[filteredIndices[index]]--;
+                                                                sum = counter.sum;
+                                                                if (sum == 0) {
+                                                                  popUpAnimationController.reverse();
+                                                                }
+                                                              })
+                                                            : {},
                                                         child: const Icon(
                                                           Icons.remove,
                                                           color: Colors.white,
@@ -301,10 +279,8 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                                       ),
                                                       Flexible(child: Container()),
                                                       Container(
-                                                        margin: const EdgeInsets.symmetric(
-                                                            horizontal: 3),
-                                                        padding: const EdgeInsets.symmetric(
-                                                            horizontal: 3, vertical: 2),
+                                                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                         decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(3),
                                                             color: Theme.of(context).primaryColor),
@@ -343,46 +319,39 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                                                   padding: const EdgeInsets.all(2),
                                                   // width: menuWidth * 0.16,
                                                   decoration: BoxDecoration(
-                                                    border:
-                                                        Border.all(color: secondaryGreen, width: 2),
+                                                    border: Border.all(color: secondaryGreen, width: 2),
                                                     borderRadius: BorderRadius.circular(10),
-                                                    color: widget.snap['foodlist']
-                                                                    [filteredIndices[index]]
+                                                    color: widget.snap['foodlist'][filteredIndices[index]]
                                                                 ['AVAILABLE'] &&
-                                                            (widget.snap['open'])
+                                                            (widget.snap['open'] && widget.snap['openAdmin'])
                                                         ? lightGreen
                                                         : Colors.grey,
                                                   ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      if (widget.snap['foodlist']
-                                                                  [filteredIndices[index]]
+                                                      if (widget.snap['foodlist'][filteredIndices[index]]
                                                               ['AVAILABLE'] &&
-                                                          (widget.snap['open'])) {
+                                                          (widget.snap['open'] && widget.snap['openAdmin'])) {
                                                         setState(() {
                                                           counter[filteredIndices[index]]++;
                                                           sum = counter.sum;
                                                           popUpAnimationController.forward();
                                                         });
-                                                      } else if (!(widget.snap['open'])) {
-                                                        showSnackBar(
-                                                            'Restaurant is closed!', context);
+                                                      } else if (!(widget.snap['open'] && widget.snap['openAdmin'])) {
+                                                        showSnackBar('Restaurant is closed!', context);
                                                       } else {
                                                         showSnackBar('Item unavailable!', context);
                                                       }
                                                     },
                                                     child: Center(
                                                       child: Container(
-                                                        margin: const EdgeInsets.symmetric(
-                                                            horizontal: 3),
-                                                        padding: const EdgeInsets.symmetric(
-                                                            horizontal: 3, vertical: 2),
+                                                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                                                        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                         decoration: BoxDecoration(
                                                           borderRadius: BorderRadius.circular(3),
-                                                          color: widget.snap['foodlist']
-                                                                          [filteredIndices[index]]
+                                                          color: widget.snap['foodlist'][filteredIndices[index]]
                                                                       ['AVAILABLE'] &&
-                                                                  (widget.snap['open'])
+                                                                  (widget.snap['open'] && widget.snap['openAdmin'])
                                                               ? lightGreen
                                                               : Colors.grey,
                                                         ),
@@ -419,8 +388,8 @@ class _FoodSearchScreenState extends State<FoodSearchScreen> with SingleTickerPr
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SlideTransition(
-                    position: Tween<Offset>(begin: const Offset(0, 1.5), end: Offset.zero)
-                        .animate(popUpAnimationController),
+                    position:
+                        Tween<Offset>(begin: const Offset(0, 1.5), end: Offset.zero).animate(popUpAnimationController),
                     child: InkWell(
                       onTap: () => Navigator.push(
                         context,
@@ -616,8 +585,7 @@ class _BuildSheetState extends State<BuildSheet> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3), color: Colors.white),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), color: Colors.white),
                       child: Text(
                         counter == 0 ? 'ADD' : '$counter',
                         style: const TextStyle(
@@ -651,15 +619,19 @@ class _BuildSheetState extends State<BuildSheet> {
                 decoration: BoxDecoration(
                   border: Border.all(color: secondaryGreen, width: 2),
                   borderRadius: BorderRadius.circular(10),
-                  color: widget.snap['foodlist'][widget.index]['AVAILABLE'] && widget.snap['open']
+                  color: widget.snap['foodlist'][widget.index]['AVAILABLE'] &&
+                          widget.snap['open'] &&
+                          widget.snap['openAdmin']
                       ? const Color.fromARGB(255, 6, 79, 53)
                       : Colors.grey,
                 ),
                 child: InkWell(
                   onTap: () {
-                    if (widget.snap['foodlist'][widget.index]['AVAILABLE'] && widget.snap['open']) {
+                    if (widget.snap['foodlist'][widget.index]['AVAILABLE'] &&
+                        widget.snap['open'] &&
+                        widget.snap['openAdmin']) {
                       Navigator.pop(context, counter);
-                    } else if (!(widget.snap['open'])) {
+                    } else if (!(widget.snap['open'] && widget.snap['openAdmin'])) {
                       showSnackBar('Restaurant is closed!', context);
                     } else {
                       showSnackBar('Item unavailable', context);

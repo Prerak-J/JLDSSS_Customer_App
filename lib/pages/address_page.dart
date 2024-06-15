@@ -62,7 +62,7 @@ class _AddressScreenState extends State<AddressScreen> {
     });
     String res =
         await AddressMethods().deleteAddressItem(FirebaseAuth.instance.currentUser!.uid, index);
-    if (context.mounted) {
+    if (mounted) {
       if (res != 'success') {
         showSnackBar(res, context);
       } else {
@@ -77,7 +77,7 @@ class _AddressScreenState extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 226, 226, 226),
+      backgroundColor: lightGrey,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(

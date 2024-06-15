@@ -21,7 +21,7 @@ class _FlashScreenState extends State<FlashScreen> {
 
   _navigateToHome() async {
     await Future.delayed(const Duration(milliseconds: 1200), () {});
-    if (context.mounted) {
+    if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: ((context) => StreamBuilder(

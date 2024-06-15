@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class ChangeNumberScreen extends StatefulWidget {
   final String from;
-  const ChangeNumberScreen({super.key, this.from=''});
+  const ChangeNumberScreen({super.key, this.from = ''});
 
   @override
   State<ChangeNumberScreen> createState() => _ChangeNumberScreenState();
@@ -38,11 +38,11 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
       showSnackBar('Number updated', context);
       if (widget.from == 'google') {
         Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
-          );
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
       } else {
         Navigator.of(context).pop();
       }
@@ -107,7 +107,11 @@ class _ChangeNumberScreenState extends State<ChangeNumberScreen> {
               Row(
                 children: [
                   InkWell(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      widget.from == 'google'
+                          ? showSnackBar('Phone number is required', context)
+                          : Navigator.pop(context);
+                    },
                     child: Container(
                       width: 150,
                       alignment: Alignment.center,

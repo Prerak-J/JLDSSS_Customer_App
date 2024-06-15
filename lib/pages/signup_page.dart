@@ -1,6 +1,6 @@
-import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/login_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
+import 'package:customer_app/screens/verification.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:customer_app/widgets/text_field_input.dart';
@@ -37,13 +37,13 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = false;
     });
 
-    if (res != "success" && context.mounted) {
+    if (res != "success" && mounted) {
       showSnackBar(res, context);
-    } else if (context.mounted) {
+    } else if (mounted) {
       showSnackBar('Welcome $name!', context);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => const VerificationScreen(),
         ),
       );
     }

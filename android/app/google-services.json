@@ -7,12 +7,131 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:421635814264:android:0d91d631b8a76f6bd14e8d",
+        "android_client_info": {
+          "package_name": "com.example.admin_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "421635814264-58tt4li0a8rvppsq200oon5iahon1nrq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.admin_app",
+            "certificate_hash": "a62faab52450af526d378d06bd046778e277d3ee"
+          }
+        },
+        {
+          "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5t5TYXpSCCzlSBlU10cmdyREPGxqsTJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:421635814264:android:b5067866e08e1bdcd14e8d",
         "android_client_info": {
           "package_name": "com.example.customer_app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "421635814264-sf8ki5s67ekoqbn9s3h50dfqdvmev7nd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.customer_app",
+            "certificate_hash": "a62faab52450af526d378d06bd046778e277d3ee"
+          }
+        },
+        {
+          "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5t5TYXpSCCzlSBlU10cmdyREPGxqsTJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421635814264:android:707ff00c65971988d14e8d",
+        "android_client_info": {
+          "package_name": "com.example.delivery_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "421635814264-otnipmvk8jatfjgg8em6cmeg8mo4nilr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.delivery_app",
+            "certificate_hash": "a62faab52450af526d378d06bd046778e277d3ee"
+          }
+        },
+        {
+          "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5t5TYXpSCCzlSBlU10cmdyREPGxqsTJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421635814264:android:75608375d7767009d14e8d",
+        "android_client_info": {
+          "package_name": "com.example.restaurant_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "421635814264-39m84dgbie824bnont9cd6e9biet7nv3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.restaurant_app",
+            "certificate_hash": "a62faab52450af526d378d06bd046778e277d3ee"
+          }
+        },
         {
           "client_id": "421635814264-a9drvjkn76jng5s0smc83voeqg5bjh0n.apps.googleusercontent.com",
           "client_type": 3

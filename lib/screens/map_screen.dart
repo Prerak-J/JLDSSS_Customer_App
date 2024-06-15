@@ -92,9 +92,9 @@ class _MapScreenState extends State<MapScreen> {
       color: Colors.orange[700],
     ).toBitmapDescriptor();
 
-    setState(() {
+    if(mounted){setState(() {
       _isLoading = false;
-    });
+    });}
   }
 
   showAlertDialog(String displayStatus) {
@@ -194,10 +194,11 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         );
+      } else {
+        setState(() {
+          _currentPosition = const LatLng(0.0, 0.0);
+        });
       }
-      // else {
-      //   print('CHECK THIS: PARTNER NOTTT FOUNDDDDDDDDDDDDDDDDDDD');
-      // }
     });
   }
 
@@ -253,6 +254,13 @@ class _MapScreenState extends State<MapScreen> {
           icon: deliveryBoyIcon,
         ),
       );
+      setState(() {
+        partnerSnap;
+      });
+    } else if (markers.length == 3) {
+      markers.removeWhere(
+        (mark) => mark.markerId == const MarkerId('Delivery Boy'),
+      );
     }
     return _isLoading
         ? const Scaffold(
@@ -282,7 +290,7 @@ class _MapScreenState extends State<MapScreen> {
                 appBar: AppBar(
                   backgroundColor: darkWhite,
                   surfaceTintColor: Colors.transparent,
-                  elevation: 8,
+                  elevation: 4,
                   shadowColor: Colors.grey[350],
                   title: const Text(
                     'Delivery Tracking',
@@ -296,8 +304,20 @@ class _MapScreenState extends State<MapScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
+                              child: Text(
+                                'Order OTP: ${orderSnap['CustomerPin']}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: parrotGreen,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(12),
                               constraints: const BoxConstraints(
                                 minHeight: 400,
                                 maxHeight: 400,
@@ -512,6 +532,58 @@ class _MapScreenState extends State<MapScreen> {
                                 ),
                               ),
                             ),
+                            partnerSnap.isEmpty
+                                ? Container()
+                                : const Padding(
+                                    padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
+                                    child: Text(
+                                      'Your Delivery Partner :',
+                                      style: TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                            partnerSnap.isEmpty
+                                ? Container()
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 4,
+                                    ),
+                                    child: Card(
+                                      elevation: 4,
+                                      margin: const EdgeInsets.all(0),
+                                      color: lightGrey,
+                                      surfaceTintColor: lightGrey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              partnerSnap['name'],
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              partnerSnap['phone'],
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: parrotGreen,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                             const Padding(
                               padding: EdgeInsets.fromLTRB(15, 12, 15, 2),
                               child: Text(
@@ -648,19 +720,25 @@ class _MapScreenState extends State<MapScreen> {
                                           ),
                                         ],
                                       ),
-                                      const Row(
+                                      Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            'Restaurant coupon - (ONLY4U)',
-                                            style: TextStyle(
+                                            orderSnap.containsKey('couponApplied')
+                                                ? orderSnap['couponApplied'].isNotEmpty
+                                                    ? 'Coupon Applied - (${orderSnap['couponApplied']['name']})'
+                                                    : 'No Coupon Applied'
+                                                : 'No Coupon Applied',
+                                            style: const TextStyle(
                                               fontSize: 14,
                                               // fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                           Text(
-                                            '- ₹60.0',
-                                            style: TextStyle(
+                                            orderSnap.containsKey('couponApplied')
+                                                ? '- ₹${(orderSnap['grdTotal'] - orderSnap['toPay']).toStringAsFixed(1)}'
+                                                : '-  ₹0.0',
+                                            style: const TextStyle(
                                               fontSize: 14,
                                               // fontWeight: FontWeight.w600,
                                             ),
@@ -672,7 +750,7 @@ class _MapScreenState extends State<MapScreen> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           const Text(
-                                            'To pay',
+                                            'Final amount',
                                             style: TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
@@ -707,7 +785,13 @@ class _MapScreenState extends State<MapScreen> {
                   Center(
                     child: InkWell(
                       onTap: () {
-                        showAlertDialog('Delivery Completed');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RatingsScreen(
+                                orderSnap: orderSnap, partnerSnap: partnerSnap, restaurantSnap: restaurantSnap),
+                          ),
+                        );
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.96,
@@ -722,7 +806,7 @@ class _MapScreenState extends State<MapScreen> {
                                 child: CircularProgressIndicator(),
                               )
                             : const Text(
-                                'I have completed the Delivery!',
+                                'Go to Ratings',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16.5,
@@ -733,6 +817,36 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ),
                 ],
+                // persistentFooterButtons: [
+                //   Center(
+                //     child: InkWell(
+                //       onTap: () {
+                //         showAlertDialog('Delivery Completed');
+                //       },
+                //       child: Container(
+                //         width: MediaQuery.of(context).size.width * 0.96,
+                //         height: 50,
+                //         alignment: Alignment.center,
+                //         decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.circular(8),
+                //           color: Colors.blue[200],
+                //         ),
+                //         child: _buttonLoading
+                //             ? const Center(
+                //                 child: CircularProgressIndicator(),
+                //               )
+                //             : const Text(
+                //                 'I got the Delivery!',
+                //                 style: TextStyle(
+                //                   fontWeight: FontWeight.w600,
+                //                   fontSize: 16.5,
+                //                   color: Colors.black,
+                //                 ),
+                //               ),
+                //       ),
+                //     ),
+                //   ),
+                // ],
               );
   }
 }
