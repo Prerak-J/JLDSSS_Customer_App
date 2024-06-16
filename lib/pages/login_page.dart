@@ -3,6 +3,7 @@ import 'package:customer_app/pages/change_number.dart';
 import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/signup_page.dart';
 import 'package:customer_app/resources/auth_methods.dart';
+import 'package:customer_app/screens/forgot_password.dart';
 import 'package:customer_app/screens/verification.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
@@ -81,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false;
     });
-    
+
     //TODO: change to verification screen after testing
 
     if (res != "success" && mounted) {
@@ -273,6 +274,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordPage(),
+                      ),
+                    ),
+                    child: const Text(
+                      'Forgot Password',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orangeAccent,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

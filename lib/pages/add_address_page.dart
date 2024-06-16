@@ -47,7 +47,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       _pickupMarker = Marker(
         markerId: const MarkerId('pickup'),
         position: LatLng(position.latitude, position.longitude),
-        infoWindow: const InfoWindow(title: 'Pickup Location'),
+        infoWindow: const InfoWindow(title: 'Delivery Location'),
         draggable: true,
         onDragEnd: (newPosition) {
           setState(() {

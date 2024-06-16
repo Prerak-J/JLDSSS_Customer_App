@@ -15,7 +15,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   bool _emailVerified = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  late Timer timer;
+  Timer timer = Timer(Duration.zero, (){});
 
   @override
   void initState() {
