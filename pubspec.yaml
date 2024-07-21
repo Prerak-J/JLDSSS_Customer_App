@@ -38,15 +38,20 @@ dependencies:
   firebase_storage: ^11.5.6
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.1.0
   flutter_local_notifications: ^17.1.2
   flutter_native_splash: ^2.3.8
   flutter_signin_button: ^2.0.0
   geolocator: ^11.0.0
   google_maps_flutter: ^2.5.3
   google_sign_in: ^6.2.1
+  googleapis: ^13.2.0
+  googleapis_auth: ^1.6.0
+  http: ^1.2.1
   intl: ^0.19.0
   provider: ^6.1.2
   rename: ^3.0.2
+  upi_india: ^3.0.1
   uuid: ^4.3.3
   widget_to_marker: ^1.0.4
 
@@ -82,6 +87,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - "assets/8.png"
+    - ".env/"
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware
     # For details regarding adding assets from package dependencies, see

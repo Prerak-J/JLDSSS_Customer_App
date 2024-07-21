@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:customer_app/pages/address_page.dart';
+import 'package:customer_app/pages/change_number.dart';
 import 'package:customer_app/resources/auth_methods.dart';
-import 'package:customer_app/screens/map_screen.dart';
+import 'package:customer_app/resources/notification_send_methods.dart';
+import 'package:customer_app/screens/payment_method_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:customer_app/widgets/discount_list.dart';
@@ -103,6 +105,27 @@ class _OrderScreenState extends State<OrderScreen> {
       showSnackBar('Please add an address', context);
       return;
     }
+    if (_userData['phone'] == "Add Number" || _userData['phone'] == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ChangeNumberScreen(),
+        ),
+      ).then((val) async {
+        setState(() {
+          _isLoading = true;
+        });
+        _userData = (await AuthMethods().getUserData(
+              FirebaseAuth.instance.currentUser!.uid,
+            )) ??
+            {};
+        setState(() {
+          phone = _userData['phone'];
+          _isLoading = false;
+        });
+      });
+      return;
+    }
     if (values.sum > 0) {
       setState(() {
         _isLoading = true;
@@ -133,18 +156,27 @@ class _OrderScreenState extends State<OrderScreen> {
         latitude: latitude,
         longitude: longitude,
         couponApplied: couponApplied,
+        fcmToken: _userData['fcmToken'],
       );
 
       if (mounted) {
         if (res == 'success') {
           // showSnackBar('Order Placed but Working on Map !', context);
           showSnackBar('Order Placed !', context);
-          Navigator.pushAndRemoveUntil(
+          Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const MapScreen(),
+              builder: (context) => PaymentOptionsScreen(
+                amount: toPay,
+              ),
             ),
-            ((route) => route.isFirst),
+          );
+          final firebaseService = FirebaseService();
+          firebaseService.sendOrderPlacedNotification(
+            widget.snap['fcmToken'] ?? '',
+            'New Order',
+            'You have a new order request',
+            'OrderScreen',
           );
         } else {
           showSnackBar(res, context);
@@ -768,8 +800,9 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 child: InkWell(
                   onTap: () {
-                    ((_userData['activeOrder'] == null) || !_userData['activeOrder'])
+                    (/*(_userData['activeOrder'] == null) || !_userData['activeOrder']*/ true)
                         ? placeOrder()
+                        // ignore: dead_code
                         : showSnackBar("You already have an active order!", context);
                   }, //PLACING ORDER
                   child: Row(

@@ -1,5 +1,5 @@
-import 'package:customer_app/pages/home_page.dart';
 import 'package:customer_app/pages/login_page.dart';
+import 'package:customer_app/screens/verification.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +26,10 @@ class _FlashScreenState extends State<FlashScreen> {
         MaterialPageRoute(
           builder: ((context) => StreamBuilder(
                 stream: FirebaseAuth.instance.authStateChanges(),
-                builder: ((context, snapshot) {
+                builder: ((context, AsyncSnapshot<User?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
                     if (snapshot.hasData) {
-                      return const HomeScreen();
+                      return const VerificationScreen();
                     } else if (snapshot.hasError) {
                       return Center(
                         child: Text('${snapshot.error}'),

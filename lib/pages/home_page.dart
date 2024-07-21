@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer_app/pages/active_order_page.dart';
 import 'package:customer_app/pages/address_page.dart';
 import 'package:customer_app/pages/delivery_page.dart';
 import 'package:customer_app/pages/history_screen.dart';
 import 'package:customer_app/pages/profile_page.dart';
-import 'package:customer_app/resources/notification_methods.dart';
-import 'package:customer_app/screens/map_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     pageController = PageController();
-    NotificationMethods().requestPermission();
     super.initState();
   }
 
@@ -129,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // showSnackBar('Work in Progress !', context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MapScreen()),
+                    MaterialPageRoute(builder: (context) => const ActiveOrderScreen()),
                   );
                 },
                 child: const Icon(

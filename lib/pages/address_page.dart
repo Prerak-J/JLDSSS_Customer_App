@@ -8,7 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddressScreen extends StatefulWidget {
-  const AddressScreen({super.key});
+  final String from;
+  const AddressScreen({super.key, this.from = ''});
 
   @override
   State<AddressScreen> createState() => _AddressScreenState();
@@ -39,8 +40,7 @@ class _AddressScreenState extends State<AddressScreen> {
         "Delete Address",
         style: TextStyle(color: parrotGreen),
       ),
-      content:
-          const Text("Are you sure you want to delete this address? This action can't be undone."),
+      content: const Text("Are you sure you want to delete this address? This action can't be undone."),
       actions: [
         cancelButton,
         continueButton,
@@ -60,8 +60,7 @@ class _AddressScreenState extends State<AddressScreen> {
     setState(() {
       _isLoading = true;
     });
-    String res =
-        await AddressMethods().deleteAddressItem(FirebaseAuth.instance.currentUser!.uid, index);
+    String res = await AddressMethods().deleteAddressItem(FirebaseAuth.instance.currentUser!.uid, index);
     if (mounted) {
       if (res != 'success') {
         showSnackBar(res, context);
@@ -76,9 +75,11 @@ class _AddressScreenState extends State<AddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool _addressExist = true;
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: AppBar(
+        automaticallyImplyLeading: widget.from != "menu",
         centerTitle: true,
         title: const Text(
           'Your Addresses',
@@ -101,6 +102,12 @@ class _AddressScreenState extends State<AddressScreen> {
                   );
                 }
                 int? currentIndex = snapshot.data!.data()!['defaultAddress'];
+                snapshot.data!.data()!['addressList'] == null
+                    ? _addressExist = false
+                    : snapshot.data!.data()!['addressList'].length == 0
+                        ? _addressExist = false
+                        : _addressExist = true;
+
                 return Padding(
                   padding: const EdgeInsets.all(18.0),
                   child: SingleChildScrollView(
@@ -131,9 +138,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                 ),
                                 child: Text(
                                   'Add Address',
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -177,10 +182,8 @@ class _AddressScreenState extends State<AddressScreen> {
                                             subtitle: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(snapshot.data!.data()!['addressList'][index]
-                                                    ['address']),
-                                                Text(snapshot.data!.data()!['addressList'][index]
-                                                    ['landmark']),
+                                                Text(snapshot.data!.data()!['addressList'][index]['address']),
+                                                Text(snapshot.data!.data()!['addressList'][index]['landmark']),
                                                 Row(
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
@@ -192,8 +195,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                                           MaterialPageRoute(
                                                             builder: (context) => EditAddressScreen(
                                                               addressIndex: index,
-                                                              addressSnap: snapshot.data!
-                                                                  .data()!['addressList'][index],
+                                                              addressSnap: snapshot.data!.data()!['addressList'][index],
                                                             ),
                                                           ),
                                                         );
@@ -239,6 +241,38 @@ class _AddressScreenState extends State<AddressScreen> {
                   ),
                 );
               }),
+      persistentFooterButtons: widget.from == "menu"
+          ? [
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    if (_addressExist) {
+                      Navigator.pop(context);
+                    } else {
+                      showSnackBar('Please add an address first', context);
+                    }
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.96,
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.green[200],
+                    ),
+                    child: const Text(
+                      'Select Address',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.5,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ]
+          : [],
     );
   }
 }

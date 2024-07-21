@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:customer_app/resources/notification_receive_methods.dart';
 import 'package:customer_app/screens/flash_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,10 @@ void main() async {
           ),
         )
       : await Firebase.initializeApp();
+  final fcmService = FCMService();
+  await fcmService.initialize();
+  await dotenv.load(fileName: ".env/private.env");
+  
   runApp(const MyApp());
 }
 

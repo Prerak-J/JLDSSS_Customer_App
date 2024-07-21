@@ -602,7 +602,9 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddressScreen(),
+                    builder: (context) => const AddressScreen(
+                      from: "menu",
+                    ),
                   ),
                 ).then(
                   (value) => Navigator.push(

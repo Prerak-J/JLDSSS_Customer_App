@@ -25,24 +25,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void fetch() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((map) {
-      if (map.data()!.containsKey('phone')) {
-        if (map.data()!['phone'] == null) {
-          if (context.mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ChangeNumberScreen(
-                  from: 'google',
-                ),
+  Future<void> _checkNumber() async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((map) {
+        if (map.data()!['phone'] == 'Add Number') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChangeNumberScreen(
+                from: 'google',
               ),
-            );
-          }
-        } else if (context.mounted) {
+            ),
+          );
+        } else {
+          // print('REACHED HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -50,19 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         }
-      } else if (context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ChangeNumberScreen(
-              from: 'google',
-            ),
-          ),
-        );
-      }
-    });
+      });
 
-    if (context.mounted) {
       setState(() {
         _isLoading = false;
       });
@@ -88,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (res != "success" && mounted) {
       showSnackBar(res, context);
     } else if (mounted) {
+      // print('REACHED HEREEEEE VERIFICATIONNNNNN');
       showSnackBar('Welcome back!', context);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -230,11 +223,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           _isLoading = true;
                         });
                         String res = await AuthMethods().signInWithGoogle();
+                        print('DONE $res');
                         if (res != 'not selected') {
                           if (res != 'success' && context.mounted) {
                             showSnackBar(res, context);
                           } else {
-                            fetch();
+                            await _checkNumber();
                           }
                         }
                         if (context.mounted) {

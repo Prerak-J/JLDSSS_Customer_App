@@ -334,25 +334,24 @@ class _DeliveryScreenState extends State<DeliveryScreen>
                 ],
               ),
               StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('orders')
-                      .where('active', isEqualTo: true)
-                      .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                      .limit(1)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-                    if (snapshot.data!.docs.isEmpty) {
-                      return Container();
-                    } else {
-                      if (snapshot.data!.docs[0].data()['confirmDelivery']) {
-                        return Container();
-                      }
-                      return AnimContainer(displayStatus: snapshot.data!.docs[0].data()['displayStatus']);
-                    }
-                  }),
+                stream: FirebaseFirestore.instance
+                    .collection('orders')
+                    .where('active', isEqualTo: true)
+                    .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container();
+                  }
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Container();
+                  } else {
+                    return AnimContainer(
+                        displayStatus:
+                            '${snapshot.data!.docs.length} Active ${snapshot.data!.docs.length > 1 ? 'orders' : 'order'}');
+                  }
+                },
+              ),
             ],
           );
         });

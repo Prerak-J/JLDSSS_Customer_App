@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:customer_app/screens/map_screen.dart';
+import 'package:customer_app/pages/active_order_page.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +60,7 @@ class _AnimContainerState extends State<AnimContainer> {
       child: InkWell(
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MapScreen()),
+          MaterialPageRoute(builder: (context) => const ActiveOrderScreen()),
         ),
         child: AnimatedContainer(
           duration: const Duration(seconds: 1),

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/screens/ratings_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:widget_to_marker/widget_to_marker.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final Map<String, dynamic> orderSnap;
+  const MapScreen({super.key, required this.orderSnap});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
 
   bool _isLoading = false;
   bool _buttonLoading = false;
-  bool _noActiveOrder = false;
+  final bool _noActiveOrder = false;
 
   @override
   void initState() {
@@ -55,25 +55,29 @@ class _MapScreenState extends State<MapScreen> {
       _isLoading = true;
     });
 
-    await FirebaseFirestore.instance
-        .collection('orders')
-        .where('active', isEqualTo: true)
-        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .limit(1)
-        .get()
-        .then((orderMap) {
-      if (orderMap.size == 0 && context.mounted) {
-        setState(() {
-          _isLoading = false;
-          _noActiveOrder = true;
-        });
-        return;
-      } else {
-        orderSnap = Map.from(orderMap.docs[0].data());
-        _destination = LatLng(orderSnap['lat'], orderSnap['lng']);
-        _startLocationTracking();
-      }
-    });
+    // await FirebaseFirestore.instance
+    //     .collection('orders')
+    //     .where('active', isEqualTo: true)
+    //     .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+    //     .limit(1)
+    //     .get()
+    //     .then((orderMap) {
+    //   if (orderMap.size == 0 && context.mounted) {
+    //     setState(() {
+    //       _isLoading = false;
+    //       _noActiveOrder = true;
+    //     });
+    //     return;
+    //   } else {
+    //     orderSnap = Map.from(orderMap.docs[0].data());
+    //     _destination = LatLng(orderSnap['lat'], orderSnap['lng']);
+    //     _startLocationTracking();
+    //   }
+    // });
+
+    orderSnap = Map.from(widget.orderSnap);
+    _destination = LatLng(orderSnap['lat'], orderSnap['lng']);
+    _startLocationTracking();
 
     await FirebaseFirestore.instance.collection('restaurants').doc(orderSnap['resUid']).get().then((value) {
       restaurantSnap = Map.from(value.data()!);
@@ -92,9 +96,11 @@ class _MapScreenState extends State<MapScreen> {
       color: Colors.orange[700],
     ).toBitmapDescriptor();
 
-    if(mounted){setState(() {
-      _isLoading = false;
-    });}
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   showAlertDialog(String displayStatus) {
@@ -785,6 +791,10 @@ class _MapScreenState extends State<MapScreen> {
                   Center(
                     child: InkWell(
                       onTap: () {
+                        if (partnerSnap.isEmpty) {
+                          showSnackBar('Delivery Partner not assigned yet', context);
+                          return;
+                        }
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

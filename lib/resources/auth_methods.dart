@@ -24,7 +24,6 @@ class AuthMethods {
     if (googleUser != null) {
       try {
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
         final OAuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
@@ -49,7 +48,7 @@ class AuthMethods {
           //SIGN UP
           final String? displayName = user.displayName;
           final String email = user.email ?? '';
-          final String? phoneNumber = user.phoneNumber;
+          final String phoneNumber = user.phoneNumber ?? 'Add Number';
 
           final userData = {
             'name': displayName,
@@ -316,12 +315,14 @@ class AuthMethods {
     required double latitude,
     required double longitude,
     required Map<String, dynamic> couponApplied,
+    required String fcmToken,
   }) async {
     String res = 'Some error occured';
     Random rnd = Random();
     int id = rnd.nextInt(900) + 100;
     int adminPin = rnd.nextInt(9000) + 1000;
     int customerPin = rnd.nextInt(9000) + 1000;
+    
     try {
       User? curr = _auth.currentUser!;
       String? uuid = const Uuid().v4();
@@ -358,8 +359,9 @@ class AuthMethods {
         'confirmDelivery': false,
         'couponApplied': couponApplied,
         'preparing': false,
+        'fcmToken': fcmToken,
       });
-      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({'activeOrder': true});
+      // await _firestore.collection('users').doc(_auth.currentUser!.uid).update({'activeOrder': true});
       res = 'success';
     } catch (e) {
       res = e.toString();
