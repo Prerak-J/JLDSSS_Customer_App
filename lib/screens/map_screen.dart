@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer_app/screens/ratings_screen.dart';
 import 'package:customer_app/utils/colors.dart';
-import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _mapController;
+  final CollectionReference _orderCollection = FirebaseFirestore.instance.collection('orders');
   final CollectionReference _partnerCollection = FirebaseFirestore.instance.collection('partners');
   LatLng _destination = const LatLng(37.77483, -122.41942); // Example destination
   LatLng _currentPosition = const LatLng(0.0, 0.0);
@@ -35,7 +35,7 @@ class _MapScreenState extends State<MapScreen> {
   BitmapDescriptor restaurantIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
 
   bool _isLoading = false;
-  bool _buttonLoading = false;
+  // bool _buttonLoading = false;
   final bool _noActiveOrder = false;
 
   @override
@@ -103,76 +103,95 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  showAlertDialog(String displayStatus) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      onPressed: () => Navigator.pop(context),
-      child: const Text(
-        "Cancel",
-        style: TextStyle(color: parrotGreen),
-      ),
-    );
-    Widget continueButton = TextButton(
-      onPressed: () async {
-        Navigator.pop(context);
-        setState(() {
-          _buttonLoading = true;
-        });
-        await FirebaseFirestore.instance.collection('orders').doc(orderSnap['orderId']).update({
-          'confirmDelivery': true,
-        });
-        setState(() {
-          _buttonLoading = false;
-        });
-        if (mounted) {
-          showSnackBar('Delivery Completed', context);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RatingsScreen(
-                orderSnap: orderSnap,
-                partnerSnap: partnerSnap,
-                restaurantSnap: restaurantSnap,
-              ),
-            ),
-          );
-        }
-        // if (mounted) {
-        //   Navigator.pop(context);
-        //   showSnackBar('Delivery Completed. Great Job!', context);
-        // }
-      },
-      child: Text(
-        "Confirm",
-        style: TextStyle(color: Colors.red[800]),
-      ),
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text(
-        "Confirm Order?",
-        style: TextStyle(color: parrotGreen),
-      ),
-      content: const Text(
-        "Are you sure you have recieved your order? You will be responsible for any future conflicts. This action can't be undone.",
-        textAlign: TextAlign.justify,
-      ),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  // showAlertDialog(String displayStatus) {
+  //   // set up the buttons
+  //   Widget cancelButton = TextButton(
+  //     onPressed: () => Navigator.pop(context),
+  //     child: const Text(
+  //       "Cancel",
+  //       style: TextStyle(color: parrotGreen),
+  //     ),
+  //   );
+  //   Widget continueButton = TextButton(
+  //     onPressed: () async {
+  //       Navigator.pop(context);
+  //       setState(() {
+  //         _buttonLoading = true;
+  //       });
+  //       await FirebaseFirestore.instance.collection('orders').doc(orderSnap['orderId']).update({
+  //         'confirmDelivery': true,
+  //       });
+  //       setState(() {
+  //         _buttonLoading = false;
+  //       });
+  //       if (mounted) {
+  //         showSnackBar('Delivery Completed', context);
+  //         Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => RatingsScreen(
+  //               orderSnap: orderSnap,
+  //               partnerSnap: partnerSnap,
+  //               restaurantSnap: restaurantSnap,
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //       // if (mounted) {
+  //       //   Navigator.pop(context);
+  //       //   showSnackBar('Delivery Completed. Great Job!', context);
+  //       // }
+  //     },
+  //     child: Text(
+  //       "Confirm",
+  //       style: TextStyle(color: Colors.red[800]),
+  //     ),
+  //   );
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: const Text(
+  //       "Confirm Order?",
+  //       style: TextStyle(color: parrotGreen),
+  //     ),
+  //     content: const Text(
+  //       "Are you sure you have recieved your order? You will be responsible for any future conflicts. This action can't be undone.",
+  //       textAlign: TextAlign.justify,
+  //     ),
+  //     actions: [
+  //       cancelButton,
+  //       continueButton,
+  //     ],
+  //   );
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
   void _startLocationTracking() {
     _startDistanceCalculation();
+    _orderCollection.doc(widget.orderSnap['orderId']).snapshots().listen((snapshot) {
+      setState(() {
+        orderSnap = Map.from(snapshot.data() as Map<String, dynamic>);
+      });
+      if (!orderSnap['active'] && orderSnap['confirmDelivery']) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RatingsScreen(
+              orderSnap: orderSnap,
+              partnerSnap: partnerSnap,
+              restaurantSnap: restaurantSnap,
+            ),
+          ),
+        );
+      } else if (!orderSnap['active']) {
+        Navigator.pop(context);
+      }
+    });
     _partnerCollection.snapshots().listen((snapshot) {
       Map<String, dynamic> partnerData = {};
       bool partnerExist = snapshot.docs.any((partner) {
@@ -316,6 +335,18 @@ class _MapScreenState extends State<MapScreen> {
                                 'Order OTP: ${orderSnap['CustomerPin']}',
                                 style: const TextStyle(
                                   fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: parrotGreen,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 14, 12, 4),
+                              child: Text(
+                                'Order Status: ${orderSnap['displayStatus']}',
+                                style: const TextStyle(
+                                  fontSize: 22,
                                   fontWeight: FontWeight.w600,
                                   color: parrotGreen,
                                 ),
@@ -787,46 +818,46 @@ class _MapScreenState extends State<MapScreen> {
                   tooltip: 'Refresh Location',
                   child: const Icon(Icons.refresh),
                 ),
-                persistentFooterButtons: [
-                  Center(
-                    child: InkWell(
-                      onTap: () {
-                        if (partnerSnap.isEmpty) {
-                          showSnackBar('Delivery Partner not assigned yet', context);
-                          return;
-                        }
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RatingsScreen(
-                                orderSnap: orderSnap, partnerSnap: partnerSnap, restaurantSnap: restaurantSnap),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.96,
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.blue[200],
-                        ),
-                        child: _buttonLoading
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : const Text(
-                                'Go to Ratings',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16.5,
-                                  color: Colors.black,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ],
+                // persistentFooterButtons: [
+                //   Center(
+                //     child: InkWell(
+                //       onTap: () {
+                //         if (partnerSnap.isEmpty) {
+                //           showSnackBar('Delivery Partner not assigned yet', context);
+                //           return;
+                //         }
+                //         Navigator.pushReplacement(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => RatingsScreen(
+                //                 orderSnap: orderSnap, partnerSnap: partnerSnap, restaurantSnap: restaurantSnap),
+                //           ),
+                //         );
+                //       },
+                //       child: Container(
+                //         width: MediaQuery.of(context).size.width * 0.96,
+                //         height: 50,
+                //         alignment: Alignment.center,
+                //         decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.circular(8),
+                //           color: Colors.blue[200],
+                //         ),
+                //         child: _buttonLoading
+                //             ? const Center(
+                //                 child: CircularProgressIndicator(),
+                //               )
+                //             : const Text(
+                //                 'Go to Ratings',
+                //                 style: TextStyle(
+                //                   fontWeight: FontWeight.w600,
+                //                   fontSize: 16.5,
+                //                   color: Colors.black,
+                //                 ),
+                //               ),
+                //       ),
+                //     ),
+                //   ),
+                // ],
                 // persistentFooterButtons: [
                 //   Center(
                 //     child: InkWell(

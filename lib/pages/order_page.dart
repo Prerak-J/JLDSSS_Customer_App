@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:customer_app/pages/active_order_page.dart';
 import 'package:customer_app/pages/address_page.dart';
 import 'package:customer_app/pages/change_number.dart';
 import 'package:customer_app/resources/auth_methods.dart';
 import 'package:customer_app/resources/notification_send_methods.dart';
-import 'package:customer_app/screens/payment_method_screen.dart';
+import 'package:customer_app/screens/razorpay_screen.dart';
 import 'package:customer_app/utils/colors.dart';
 import 'package:customer_app/utils/utils.dart';
 import 'package:customer_app/widgets/discount_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class OrderScreen extends StatefulWidget {
   final Map<String, dynamic> snap;
@@ -48,6 +50,8 @@ class _OrderScreenState extends State<OrderScreen> {
   Map<String, dynamic> couponApplied = {};
   double couponDiscount = 0.0;
 
+  late Razorpay _razorpay;
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +66,7 @@ class _OrderScreenState extends State<OrderScreen> {
     for (int i = 0; i < values.length; i++) {
       sum += values[i] * (widget.snap['foodlist'][indice[i]]['PRICE']);
     }
+    _razorpay = Razorpay();
     _isLoading = false;
     fetch();
   }
@@ -130,6 +135,8 @@ class _OrderScreenState extends State<OrderScreen> {
       setState(() {
         _isLoading = true;
       });
+      orders.clear();
+      prices.clear();
       for (int i = 0; i < values.length; i++) {
         if (values[i] > 0) {
           orders.add('${widget.snap['foodlist'][indice[i]]['NAME']} x ${values[i].toString()}');
@@ -137,50 +144,68 @@ class _OrderScreenState extends State<OrderScreen> {
         }
       }
 
-      String res = await AuthMethods().addActiveOrder(
-        resName: widget.snap['name'],
-        resUid: widget.snap['resUid'],
-        orders: orders,
-        prices: prices,
-        total: sum,
-        grdTotal: double.parse(grdTotal.toStringAsFixed(2)),
-        toPay: double.parse(toPay.toStringAsFixed(2)),
-        name: name,
-        email: email,
-        phone: phone,
-        address: address,
-        resAddress: widget.snap['address'],
-        gst: gst,
-        deliveryFee: deliveryFee,
-        platformFee: platformFee,
-        latitude: latitude,
-        longitude: longitude,
-        couponApplied: couponApplied,
-        fcmToken: _userData['fcmToken'],
+      bool paymentSuccess = false;
+      // String message = '';
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RazorpayScreen(
+            razorpay: _razorpay,
+            amount: double.parse(toPay.toStringAsFixed(2)),
+          ),
+        ),
       );
 
-      if (mounted) {
-        if (res == 'success') {
-          // showSnackBar('Order Placed but Working on Map !', context);
-          showSnackBar('Order Placed !', context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentOptionsScreen(
-                amount: toPay,
-              ),
-            ),
-          );
-          final firebaseService = FirebaseService();
-          firebaseService.sendOrderPlacedNotification(
-            widget.snap['fcmToken'] ?? '',
-            'New Order',
-            'You have a new order request',
-            'OrderScreen',
-          );
-        } else {
-          showSnackBar(res, context);
+      if (result != null) {
+        paymentSuccess = result['success'];
+        // message = result['message'];
+      }
+
+      if (paymentSuccess) {
+        String res = await AuthMethods().addActiveOrder(
+          resName: widget.snap['name'],
+          resUid: widget.snap['resUid'],
+          orders: orders,
+          prices: prices,
+          total: sum,
+          grdTotal: double.parse(grdTotal.toStringAsFixed(2)),
+          toPay: double.parse(toPay.toStringAsFixed(2)),
+          name: name,
+          email: email,
+          phone: phone,
+          address: address,
+          resAddress: widget.snap['address'],
+          gst: gst,
+          deliveryFee: deliveryFee,
+          platformFee: platformFee,
+          latitude: latitude,
+          longitude: longitude,
+          couponApplied: couponApplied,
+          fcmToken: _userData['fcmToken'],
+        );
+
+        if (mounted) {
+          if (res == 'success') {
+            // showSnackBar('Order Placed but Working on Map !', context);
+            showSnackBar('Order Placed !', context);
+            final firebaseService = FirebaseService();
+            firebaseService.sendOrderPlacedNotification(
+              widget.snap['fcmToken'] ?? '',
+              'New Order',
+              'You have a new order request',
+              'OrderScreen',
+            );
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const ActiveOrderScreen()),
+              ((route) => route.isFirst),
+            );
+          } else {
+            showSnackBar(res, context);
+          }
         }
+      } else {
+        if (mounted) showSnackBar('Payment failed. If any money was debited, it will be refunded soon', context);
       }
 
       setState(() {

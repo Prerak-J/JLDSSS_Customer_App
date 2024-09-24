@@ -1,5 +1,6 @@
-import 'package:customer_app/pages/active_order_page.dart';
-import 'package:customer_app/utils/utils.dart';
+// import 'dart:async';
+
+// import 'package:customer_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:upi_india/upi_india.dart';
 
@@ -18,19 +19,21 @@ class _PaymentOptionsScreenState extends State<PaymentOptionsScreen> {
   void handleUpiResponse(UpiResponse response) {
     if (response.status == UpiPaymentStatus.SUCCESS) {
       print('Transaction successful');
-      showSnackBar('Transaction Successful', context);
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const ActiveOrderScreen()),
-        ((route) => route.isFirst),
-      );
+      // showSnackBar('Transaction Successful', context);
+      Navigator.pop(context, true);
       // Proceed with order completion
     } else if (response.status == UpiPaymentStatus.SUBMITTED) {
       print('Transaction submitted');
-      showSnackBar('Transaction Submitted', context);
+      setState(() {
+        _isLoading = true;
+      });
+      // Timer.periodic(const Duration(seconds: 3), (timer) {
+      //   handleUpiResponse(response);
+      // });
       // Handle submitted status
     } else {
       print('Transaction failed');
+      Navigator.pop(context, false);
       // Handle failure
     }
   }
@@ -41,7 +44,16 @@ class _PaymentOptionsScreenState extends State<PaymentOptionsScreen> {
       appBar: AppBar(title: const Text('Payment Options')),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Processing payment...'),
+                  ),
+                ],
+              ),
             )
           : ListView(
               children: [
@@ -72,6 +84,7 @@ class _PaymentOptionsScreenState extends State<PaymentOptionsScreen> {
 
   void handleCashOnDelivery(BuildContext context) {
     // Implement cash on delivery logic
+    Navigator.pop(context, true);
   }
 
   void handleUpiPayment(UpiApp app) async {
